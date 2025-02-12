@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F22223F8-A873-47A1-8478-0062602AC509}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D0B04683-9D81-4E88-A3B2-D7D57A0F21A6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4CBEDC1E-8967-49A5-925C-9112384EE419}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MimoBackend.API", "MimoBackend.API\MimoBackend.API.csproj", "{92C431B0-8F05-48E1-A157-7DC64E9469E0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{92C431B0-8F05-48E1-A157-7DC64E9469E0} = {D0B04683-9D81-4E88-A3B2-D7D57A0F21A6}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
