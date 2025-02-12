@@ -9,8 +9,37 @@ public interface ITokenCache
 
 public class TokenCache : ITokenCache
 {
+    private const double ExpirationSeconds = 3600;
+    
+    protected Dictionary<string, AuthenticationToken> Cache { get; set; } = new();
+    
     public AuthenticationToken GenerateNewToken(Credentials credentials)
     {
-        throw new NotImplementedException();
+        var newToken = CreateToken(credentials.username);
+        Cache.Add(newToken.Token, newToken);
+        return newToken;
     }
+
+    private AuthenticationToken CreateToken(string username)
+    {
+        return new AuthenticationToken()
+        {
+            Token = new Guid().ToString(),
+            Username = username,
+            Expires = new DateTimeOffset(DateTime.UtcNow.AddSeconds(ExpirationSeconds)).ToUnixTimeSeconds()
+        };
+    }
+
+    public bool IsTokenValid(string token)
+    {
+        var isTokenValid = Cache.ContainsKey(token) && !IsExpired(Cache[token]);
+        if (!isTokenValid)
+        {
+            Cache.Remove(token);
+        }
+        return isTokenValid;
+    }
+
+    private bool IsExpired(AuthenticationToken authenticationToken) 
+        => authenticationToken.Expires - new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() <= 0;
 }

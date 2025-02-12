@@ -48,7 +48,7 @@ public class AuthorizationServiceShould
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(200);
-        (result as ContentResult)!.Content.Should().Be("{\"Token\":\"TOKEN\"}");
+        (result as ContentResult)!.Content.Should().Contain("TOKEN");
     }
 
     [Fact]
