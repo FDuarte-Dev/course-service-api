@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4CBEDC1E-8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MimoBackend.API", "MimoBackend.API\MimoBackend.API.csproj", "{92C431B0-8F05-48E1-A157-7DC64E9469E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MimoBackend.Test", "MimoBackend.Test\MimoBackend.Test.csproj", "{E12AE5E2-7DEB-4532-A049-5E207D29621F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,11 +21,16 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{92C431B0-8F05-48E1-A157-7DC64E9469E0} = {D0B04683-9D81-4E88-A3B2-D7D57A0F21A6}
+		{E12AE5E2-7DEB-4532-A049-5E207D29621F} = {4CBEDC1E-8967-49A5-925C-9112384EE419}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92C431B0-8F05-48E1-A157-7DC64E9469E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E12AE5E2-7DEB-4532-A049-5E207D29621F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12AE5E2-7DEB-4532-A049-5E207D29621F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E12AE5E2-7DEB-4532-A049-5E207D29621F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E12AE5E2-7DEB-4532-A049-5E207D29621F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
