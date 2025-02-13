@@ -27,16 +27,16 @@ public class AuthorizationService : BaseService, IAuthorizationService
         var user = await _userRepository.GetUser(credentials.username);
         if (UserNotFound(user))
         {
-            return BuildResponse(404);
+            return BuildResponse(StatusCodes.Status404NotFound);
         }
 
         if (IsPasswordMatch(user!, credentials))
         {
             var token = GetNewToken(credentials);
-            return BuildResponse(200, token);
+            return BuildResponse(StatusCodes.Status200OK, token);
         }
 
-        return BuildResponse(403);
+        return BuildResponse(StatusCodes.Status403Forbidden);
     }
 
     private static bool UserNotFound(User? user) 

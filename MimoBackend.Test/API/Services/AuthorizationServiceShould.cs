@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
@@ -46,7 +47,7 @@ public class AuthorizationServiceShould
         var result = await _service.Authorize(credentials);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(200);
+        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
         (result as ContentResult)!.Content.Should().Contain("TOKEN");
     }
 
@@ -62,7 +63,7 @@ public class AuthorizationServiceShould
         var result = await _service.Authorize(credentials);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(404);
+        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
         (result as ContentResult)!.Content.Should().BeNullOrWhiteSpace();
     }
 
@@ -83,7 +84,7 @@ public class AuthorizationServiceShould
         var result = await _service.Authorize(credentials);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(403);
+        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
         (result as ContentResult)!.Content.Should().BeNullOrWhiteSpace();
     }
 }

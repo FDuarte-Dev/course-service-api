@@ -9,8 +9,8 @@ public class LessonProgress
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    public string StartTime { get; set; }
-    public string CompletionTime { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime CompletionTime { get; set; }
     public string UserUsername { get; set; }
     public User User { get; set; }
     public int LessonId { get; set; }

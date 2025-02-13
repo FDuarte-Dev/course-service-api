@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MimoBackend.API.Models;
+using MimoBackend.API.Models.DatabaseObjects;
+using MimoBackend.API.Repositories;
 
 namespace MimoBackend.API.Services;
 
@@ -12,18 +14,37 @@ public interface ILessonProgressService
 
 public class LessonProgressService : BaseService, ILessonProgressService
 {
-    public Task<IActionResult> UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username)
+    private readonly ILessonProgressRepository _lessonProgressRepository;
+
+    public LessonProgressService(ILessonProgressRepository lessonProgressRepository)
     {
-        throw new NotImplementedException();
+        _lessonProgressRepository = lessonProgressRepository;
     }
 
-    public Task<IActionResult> StartLesson(string lessonId, DateTime date, string username)
+    public async Task<IActionResult> UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username)
     {
-        throw new NotImplementedException();
+        var lessonProgress = await _lessonProgressRepository.UpdateLesson(lessonId, lessonUpdate, username);
+        return LessonNotFound(lessonProgress) ? 
+            BuildResponse(StatusCodes.Status404NotFound) : 
+            BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
 
-    public Task<IActionResult> CompleteLesson(string lessonId, DateTime date, string username)
+    public async Task<IActionResult> StartLesson(string lessonId, DateTime date, string username)
     {
-        throw new NotImplementedException();
+        var lessonProgress = await _lessonProgressRepository.StartLesson(lessonId, date, username);
+        return LessonNotFound(lessonProgress) ? 
+            BuildResponse(StatusCodes.Status404NotFound) : 
+            BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
+
+    public async Task<IActionResult> CompleteLesson(string lessonId, DateTime date, string username)
+    {
+        var lessonProgress = await _lessonProgressRepository.CompleteLesson(lessonId, date, username);
+        return LessonNotFound(lessonProgress) ? 
+            BuildResponse(StatusCodes.Status404NotFound) : 
+            BuildResponse(StatusCodes.Status200OK, lessonProgress);
+    }
+    
+    private static bool LessonNotFound(LessonProgress? lessonProgress) 
+        => lessonProgress is null;
 }
