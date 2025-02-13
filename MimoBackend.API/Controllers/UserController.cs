@@ -11,9 +11,10 @@ public class UserController
     private readonly ILogger<UserController> _logger;
     private readonly IAuthorizationService _authorizationService;
 
-    public UserController(ILogger<UserController> logger)
+    public UserController(ILogger<UserController> logger, IAuthorizationService authorizationService)
     {
         _logger = logger;
+        _authorizationService = authorizationService;
     }
 
     [HttpPost]

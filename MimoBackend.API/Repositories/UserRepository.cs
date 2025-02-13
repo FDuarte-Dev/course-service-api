@@ -1,5 +1,5 @@
-using MimoBackend.API.Models;
 using MimoBackend.API.Models.DTOs;
+using MimoBackend.API.Persistence;
 
 namespace MimoBackend.API.Repositories;
 
@@ -10,8 +10,15 @@ public interface IUserRepository
 
 public class UserRepository : IUserRepository
 {
-    public Task<UserDto?> GetUser(string username)
+    private readonly AppDbContext _context;
+
+    public UserRepository(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
+    }
+
+    public async Task<UserDto?> GetUser(string username)
+    {
+        return await _context.Users.FindAsync(username);
     }
 }
