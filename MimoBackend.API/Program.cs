@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using MimoBackend.API;
+using MimoBackend.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +26,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.MapControllers();
 
+app.UseWhen(RequireAuthorization, appBuilder =>
+{
+    appBuilder.UseMiddleware<UserAuthorizationMiddleware>();
+});
+
+
+
 app.Run();
+return;
+
+bool RequireAuthorization(HttpContext httpContext) 
+    => httpContext.Request.Path.StartsWithSegments("/lessons");
