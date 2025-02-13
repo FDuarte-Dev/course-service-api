@@ -5,6 +5,8 @@ namespace MimoBackend.API.Persistence.Caches;
 public interface ITokenCache
 {
     AuthenticationToken GenerateNewToken(Credentials credentials);
+    bool IsTokenValid(string token);
+    string GetUsername(string token);
 }
 
 public class TokenCache : ITokenCache
@@ -39,10 +41,10 @@ public class TokenCache : ITokenCache
         }
         return isTokenValid;
     }
+    
+    public string GetUsername(string token) 
+        => Cache[token].Username;
 
     private bool IsExpired(AuthenticationToken authenticationToken) 
         => authenticationToken.Expires - new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() <= 0;
-
-    public string GetUsername(string token) 
-        => Cache[token].Username;
 }

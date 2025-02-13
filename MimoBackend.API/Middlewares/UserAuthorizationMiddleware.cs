@@ -6,9 +6,9 @@ namespace MimoBackend.API.Middlewares;
 public class UserAuthorizationMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly TokenCache cache;
+    private readonly ITokenCache cache;
 
-    public UserAuthorizationMiddleware(RequestDelegate next, TokenCache cache)
+    public UserAuthorizationMiddleware(RequestDelegate next, ITokenCache cache)
     {
         _next = next;
         this.cache = cache;
