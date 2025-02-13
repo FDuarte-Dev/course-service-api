@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MimoBackend.API.Models.DTOs;
+namespace MimoBackend.API.Models.DatabaseObjects;
 
-public class CourseDto
+public class Achievement
 {
-    [Key] 
+    [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-
     public string Name { get; set; }
-    public ICollection<ChapterDto> Chapters { get; set; }
+    public int CompletionRequirements { get; set; }
 }

@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MimoBackend.API.Models.DTOs;
+namespace MimoBackend.API.Models.DatabaseObjects;
 
-public class UserAchievementsDto
+public class UserAchievements
 {
     [Key] 
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,8 +1,7 @@
-using System.Net;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using MimoBackend.API.Models;
-using MimoBackend.API.Models.DTOs;
+using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Persistence.Caches;
 using MimoBackend.API.Repositories;
 using MimoBackend.API.Services;
@@ -32,7 +31,7 @@ public class AuthorizationServiceShould
         // Arrange
         var credentials = new Credentials(Username, Password);
         _userRepository.Setup(x => x.GetUser(Username))
-            .ReturnsAsync(new UserDto()
+            .ReturnsAsync(new User()
             {
                 Username = Username,
                 Password = Password
@@ -57,7 +56,7 @@ public class AuthorizationServiceShould
         // Arrange
         var credentials = new Credentials(Username, Password);
         _userRepository.Setup(x => x.GetUser(Username))
-            .ReturnsAsync((UserDto?)null);
+            .ReturnsAsync((User?)null);
         
         // Act
         var result = await _service.Authorize(credentials);
@@ -74,7 +73,7 @@ public class AuthorizationServiceShould
         const string otherPassword = "other-pwd";
         var credentials = new Credentials(Username, Password);
         _userRepository.Setup(x => x.GetUser(Username))
-            .ReturnsAsync(new UserDto()
+            .ReturnsAsync(new User()
             {
                 Username = Username,
                 Password = otherPassword

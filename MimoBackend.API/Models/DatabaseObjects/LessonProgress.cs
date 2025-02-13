@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MimoBackend.API.Models.DTOs;
+namespace MimoBackend.API.Models.DatabaseObjects;
 
-public class LessonProgressDto
+public class LessonProgress
 {
     [Key] 
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -12,7 +12,7 @@ public class LessonProgressDto
     public string StartTime { get; set; }
     public string CompletionTime { get; set; }
     public string UserUsername { get; set; }
-    public UserDto User { get; set; }
+    public User User { get; set; }
     public int LessonId { get; set; }
-    public LessonDto Lesson { get; set; }
+    public Lesson Lesson { get; set; }
 }

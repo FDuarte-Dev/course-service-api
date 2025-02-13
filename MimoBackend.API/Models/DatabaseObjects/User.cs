@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MimoBackend.API.Models.DTOs;
+namespace MimoBackend.API.Models.DatabaseObjects;
 
-public class UserDto
+public class User
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]

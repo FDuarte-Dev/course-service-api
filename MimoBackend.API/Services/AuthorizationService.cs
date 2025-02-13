@@ -1,7 +1,6 @@
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using MimoBackend.API.Models;
-using MimoBackend.API.Models.DTOs;
+using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Persistence.Caches;
 using MimoBackend.API.Repositories;
 
@@ -40,10 +39,10 @@ public class AuthorizationService : BaseService, IAuthorizationService
         return BuildResponse(403);
     }
 
-    private static bool UserNotFound(UserDto? user) 
+    private static bool UserNotFound(User? user) 
         => user is null;
     
-    private static bool IsPasswordMatch(UserDto user, Credentials credentials) 
+    private static bool IsPasswordMatch(User user, Credentials credentials) 
         => user.Password == credentials.password;
     
     private AuthenticationToken GetNewToken(Credentials credentials) 
