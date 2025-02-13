@@ -45,6 +45,28 @@ public class TokenCacheShould
         result.Should().BeFalse();
         (_cache as TestableTokenCache)!.CacheSize.Should().Be(0);
     }
+    
+    [Fact]
+    public void ReturnOwnerUsernameFromToken()
+    {
+        // Arrange
+        var timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+        const string username = "username";
+        var token = new AuthenticationToken(){Token = "token", Expires = timestamp, Username = username};
+        var testCache = new Dictionary<string, AuthenticationToken>()
+        {
+            {"token", token}
+        };
+        
+        _cache = new TestableTokenCache();
+        (_cache as TestableTokenCache)!.PopulateCache(testCache);
+        
+        // Act
+        var result = _cache.GetUsername("token");
+        
+        // Assert
+        result.Should().Be(username);
+    }
 
     private class TestableTokenCache : TokenCache
     {

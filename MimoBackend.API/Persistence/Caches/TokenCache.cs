@@ -42,4 +42,7 @@ public class TokenCache : ITokenCache
 
     private bool IsExpired(AuthenticationToken authenticationToken) 
         => authenticationToken.Expires - new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds() <= 0;
+
+    public string GetUsername(string token) 
+        => Cache[token].Username;
 }
