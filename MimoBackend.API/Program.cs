@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using MimoBackend.API;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MimoBackend.API.Models.DTOs;
 using MimoBackend.API.Persistence;
 using MimoBackend.API.Persistence.Caches;
 using MimoBackend.API.Repositories;

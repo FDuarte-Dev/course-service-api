@@ -24,7 +24,7 @@ public class TokenCache : ITokenCache
     {
         return new AuthenticationToken()
         {
-            Token = new Guid().ToString(),
+            Token = Guid.NewGuid().ToString(),
             Username = username,
             Expires = new DateTimeOffset(DateTime.UtcNow.AddSeconds(ExpirationSeconds)).ToUnixTimeSeconds()
         };
