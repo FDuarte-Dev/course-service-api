@@ -970,6 +970,7 @@ fabric.properties
 ### VisualStudio ###
 
 # User-specific files
+*.db
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 
