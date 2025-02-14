@@ -9,7 +9,7 @@ public interface ILessonProgressService
 {
     IActionResult UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username);
     IActionResult StartLesson(string lessonId, DateTime startTime, string username);
-    IActionResult CompleteLesson(string lessonId, DateTime completionDate, string username);
+    IActionResult CompleteLesson(string lessonId, DateTime completionTime, string username);
 }
 
 public class LessonProgressService : BaseService, ILessonProgressService
@@ -37,16 +37,9 @@ public class LessonProgressService : BaseService, ILessonProgressService
         if (UserNotFoundReturns(user, out var userNotFound)) 
             return userNotFound;
 
-        var lessonProgress = new LessonProgress()
-        {
-            LessonId = lesson.Id,
-            Lesson = lesson,
-            UserUsername = user.Username,
-            User = user,
-            StartTime = lessonUpdate.StartTime,
-            CompletionTime = lessonUpdate.CompletionTime
-        };
+        var lessonProgress = CreateLessonProgress(lesson!, user!, lessonUpdate.StartTime, lessonUpdate.CompletionTime);
         lessonProgress = _lessonProgressRepository.AddLessonProgress(lessonProgress);
+        
         return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
 
@@ -60,22 +53,14 @@ public class LessonProgressService : BaseService, ILessonProgressService
         if (UserNotFoundReturns(user, out var userNotFound)) 
             return userNotFound;
         
-        var lessonProgresses = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, false);
-        // TODO: WIP
-        LessonProgress lessonProgress = new LessonProgress();
-        if (!lessonProgresses.Any())
-        {
-            lessonProgress = _lessonProgressRepository.AddLessonProgress(lessonProgress);
-        }
-        else
-        {
-            lessonProgress = _lessonProgressRepository.UpdateLessonProgress(lessonProgress);
-            
-        }
+        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, false);
+        lessonProgress = lessonProgress is null ?
+            _lessonProgressRepository.AddLessonProgress(CreateLessonProgress(lesson!, user!, startTime)) :
+            _lessonProgressRepository.UpdateLessonProgressStartTime(lessonProgress.Id, startTime);
         return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
 
-    public IActionResult CompleteLesson(string lessonId, DateTime completionDate, string username)
+    public IActionResult CompleteLesson(string lessonId, DateTime completionTime, string username)
     {
         var lesson = _lessonRepository.GetLessonBy(lessonId);
         if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
@@ -85,14 +70,24 @@ public class LessonProgressService : BaseService, ILessonProgressService
         if (UserNotFoundReturns(user, out var userNotFound)) 
             return userNotFound;
         
-        // TODO: WIP
-        var lessonProgress = _lessonProgressRepository.FindByLessonAndUser(lesson, user);
-        // lessonProgress = _lessonProgressRepository.UpdateLessonProgress(lessonProgress);
+        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, false);
+        if (LessonProgressNotFoundReturns(lessonProgress, out var lessonProgressNotFound)) 
+            return lessonProgressNotFound;
+        lessonProgress = _lessonProgressRepository.UpdateLessonProgressCompletionTime(lessonProgress!.Id, completionTime);
         return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
-}
-
-public interface ILessonRepository
-{
-    Lesson? GetLessonBy(string lessonId);
+    
+    private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime) 
+        => CreateLessonProgress(lesson, user, startTime, null);
+    
+    private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime, DateTime? completionTime) 
+        => new()
+        {
+            LessonId = lesson.Id,
+            Lesson = lesson,
+            UserUsername = user.Username,
+            User = user,
+            StartTime = startTime,
+            CompletionTime = completionTime
+        };
 }

@@ -6,9 +6,10 @@ namespace MimoBackend.API.Repositories;
 public interface ILessonProgressRepository
 {
     LessonProgress AddLessonProgress(LessonProgress lessonProgress);
-    LessonProgress UpdateLessonProgress(LessonProgress lessonProgress);
+    LessonProgress? UpdateLessonProgressStartTime(int lessonProgressId, DateTime startTime);
+    LessonProgress? UpdateLessonProgressCompletionTime(int lessonProgressId, DateTime completionTime);
     List<LessonProgress> FindByLessonAndUser(Lesson? lesson, User? user);
-    List<LessonProgress> FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed);
+    LessonProgress? FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed);
 }
 
 public class LessonProgressRepository : ILessonProgressRepository
@@ -20,14 +21,9 @@ public class LessonProgressRepository : ILessonProgressRepository
         _context = context;
     }
 
-    public LessonProgress AddLessonProgress(LessonProgress lessonProgress)
+    private LessonProgress? GetLessonProgressById(int lessonProgressId)
     {
-        return _context.LessonProgresses.Add(lessonProgress).Entity;
-    }
-
-    public LessonProgress UpdateLessonProgress(LessonProgress lessonProgress)
-    {
-        return _context.LessonProgresses.Update(lessonProgress).Entity;
+        return _context.LessonProgresses.Find(lessonProgressId);
     }
 
     public List<LessonProgress> FindByLessonAndUser(Lesson? lesson, User? user)
@@ -39,13 +35,41 @@ public class LessonProgressRepository : ILessonProgressRepository
             .ToList();
     }
 
-    public List<LessonProgress> FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed)
+    public LessonProgress? FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed)
     {
         return _context.LessonProgresses
             .Where(x => 
                 x.LessonId == lesson.Id &&
                 x.UserUsername == user.Username &&
-                !x.CompletionTime.HasValue)
-            .ToList();
+                x.CompletionTime.HasValue == completed)
+            .ToList()
+            .FirstOrDefault();
+    }
+
+
+
+    public LessonProgress AddLessonProgress(LessonProgress lessonProgress)
+    {
+        var entry = _context.LessonProgresses.Add(lessonProgress);
+        _context.SaveChanges();
+        return entry.Entity;
+    }
+
+    public LessonProgress UpdateLessonProgressStartTime(int lessonProgressId, DateTime startTime)
+    {
+        var lessonProgress = GetLessonProgressById(lessonProgressId);
+        lessonProgress!.StartTime = startTime;
+        var entry = _context.LessonProgresses.Update(lessonProgress);
+        _context.SaveChanges();
+        return entry.Entity;
+    }
+    
+    public LessonProgress UpdateLessonProgressCompletionTime(int lessonProgressId, DateTime completionTime)
+    {
+        var lessonProgress = GetLessonProgressById(lessonProgressId);
+        lessonProgress!.CompletionTime = completionTime;
+        var entry = _context.LessonProgresses.Update(lessonProgress);
+        _context.SaveChanges();
+        return entry.Entity;
     }
 }

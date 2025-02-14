@@ -15,6 +15,7 @@ public class LessonProgressServiceShould
     private readonly Mock<IUserRepository> _userRepository = new();
     private readonly Mock<ILessonProgressRepository> _lpRepository = new();
     
+    private const int LessonProgressId = 1;
     private const string LessonId = "1";
     private const string Username = "user1";
 
@@ -53,13 +54,8 @@ public class LessonProgressServiceShould
     public void CreateNewLessonProgressOnUpdateLessonProgress()
     {
         // Arrange
-        var expectedLessonUpdate = new LessonProgress()
-        {
-            LessonId = int.Parse(LessonId),
-            UserUsername = Username,
-            StartTime = _lessonUpdate.StartTime,
-            CompletionTime = _lessonUpdate.CompletionTime
-        };
+        var expectedLessonUpdate =
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
         _lpRepository.Setup(x => x.AddLessonProgress(It.IsAny<LessonProgress>()))
             .Returns(expectedLessonUpdate);
         
@@ -102,31 +98,86 @@ public class LessonProgressServiceShould
     public void UpdateStartDateWhenReStartingNonCompletedLesson()
     {
         // Arrange
+        var existing = 
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
+        _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, _user, false))
+            .Returns(existing);
+        _lpRepository.Setup(x => x.UpdateLessonProgressStartTime(1, _lessonUpdate.StartTime))
+            .Returns(existing);
+        
         // Act
+        var result = _service.StartLesson(LessonId, DateTime.Today, Username);
+        
         // Assert
+        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
+        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
     }
     
     [Fact]
     public void CreateNewLessonProgressWhenReStartingCompletedLesson()
     {
         // Arrange
+        var lessonProgress = 
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
+        _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, _user, true))
+            .Returns((LessonProgress?)null);
+        _lpRepository.Setup(x => x.AddLessonProgress(It.IsAny<LessonProgress>()))
+            .Returns(lessonProgress);
+        
         // Act
+        var result = _service.StartLesson(LessonId, DateTime.Today, Username);
+        
         // Assert
+        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
+        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
     }
     
     [Fact]
     public void CompleteLessonProgress()
     {
         // Arrange
+        var existing = 
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
+        _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, _user, false))
+            .Returns(existing);
+        _lpRepository.Setup(x => x.UpdateLessonProgressCompletionTime(1, _lessonUpdate.StartTime))
+            .Returns(existing);
+        
         // Act
+        var result = _service.CompleteLesson(LessonId, DateTime.Today, Username);
+        
         // Assert
+        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
+        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
     }
     
     [Fact]
     public void ReturnNotFoundOnNonexistentLessonProgressOnCompleteLesson()
     {
         // Arrange
+        _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, _user, false))
+            .Returns((LessonProgress?)null);
+        
         // Act
+        var result = _service.CompleteLesson(LessonId, _lessonUpdate.CompletionTime, Username);
+        
         // Assert
+        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+
     }
+    
+    private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime) 
+        => CreateLessonProgress(lesson, user, startTime, null);
+    
+    private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime, DateTime? completionTime) 
+        => new()
+        {
+            Id = LessonProgressId,
+            LessonId = lesson.Id,
+            Lesson = lesson,
+            UserUsername = user.Username,
+            User = user,
+            StartTime = startTime,
+            CompletionTime = completionTime
+        };
 }

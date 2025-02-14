@@ -54,4 +54,21 @@ public abstract class BaseService
         bool LessonNotFound() 
             => lesson is null;
     }
+    
+    protected static bool LessonProgressNotFoundReturns(LessonProgress? lessonProgress, out IActionResult actionResult)
+    {
+        actionResult = null!;
+        if (LessonProgressNotFound())
+        {
+            {
+                actionResult = BuildResponse(StatusCodes.Status404NotFound, "Lesson progress not found");
+                return true;
+            }
+        }
+
+        return false;
+        
+        bool LessonProgressNotFound() 
+            => lessonProgress is null;
+    }
 }
