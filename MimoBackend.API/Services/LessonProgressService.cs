@@ -7,9 +7,9 @@ namespace MimoBackend.API.Services;
 
 public interface ILessonProgressService
 {
-    IActionResult UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username);
-    IActionResult StartLesson(string lessonId, DateTime startTime, string username);
-    IActionResult CompleteLesson(string lessonId, DateTime completionTime, string username);
+    IActionResult UpdateLesson(int lessonId, LessonUpdate lessonUpdate, string username);
+    IActionResult StartLesson(int lessonId, DateTime startTime, string username);
+    IActionResult CompleteLesson(int lessonId, DateTime completionTime, string username);
 }
 
 public class LessonProgressService : BaseService, ILessonProgressService
@@ -27,7 +27,7 @@ public class LessonProgressService : BaseService, ILessonProgressService
         _lessonProgressRepository = lessonProgressRepository;
     }
 
-    public IActionResult UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username)
+    public IActionResult UpdateLesson(int lessonId, LessonUpdate lessonUpdate, string username)
     {
         var lesson = _lessonRepository.GetLessonBy(lessonId);
         if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
@@ -43,7 +43,7 @@ public class LessonProgressService : BaseService, ILessonProgressService
         return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
 
-    public IActionResult StartLesson(string lessonId, DateTime startTime, string username)
+    public IActionResult StartLesson(int lessonId, DateTime startTime, string username)
     {
         var lesson = _lessonRepository.GetLessonBy(lessonId);
         if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
@@ -53,14 +53,14 @@ public class LessonProgressService : BaseService, ILessonProgressService
         if (UserNotFoundReturns(user, out var userNotFound)) 
             return userNotFound;
         
-        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, false);
+        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson!, user!, false);
         lessonProgress = lessonProgress is null ?
             _lessonProgressRepository.AddLessonProgress(CreateLessonProgress(lesson!, user!, startTime)) :
             _lessonProgressRepository.UpdateLessonProgressStartTime(lessonProgress.Id, startTime);
         return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
 
-    public IActionResult CompleteLesson(string lessonId, DateTime completionTime, string username)
+    public IActionResult CompleteLesson(int lessonId, DateTime completionTime, string username)
     {
         var lesson = _lessonRepository.GetLessonBy(lessonId);
         if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 

@@ -5,7 +5,7 @@ namespace MimoBackend.API.Repositories;
 
 public interface ILessonRepository
 {
-    Lesson? GetLessonBy(string lessonId);
+    Lesson? GetLessonBy(int lessonId);
 }
 
 public class LessonRepository : ILessonRepository
@@ -17,7 +17,7 @@ public class LessonRepository : ILessonRepository
         _context = context;
     }
     
-    public Lesson? GetLessonBy(string lessonId)
+    public Lesson? GetLessonBy(int lessonId)
     {
         return _context.Lessons.Find(lessonId);
     }

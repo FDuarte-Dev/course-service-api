@@ -18,7 +18,7 @@ public class LessonProgressController
     [HttpPost]
     [Route("update")]
     [Produces("application/json")]
-    public IActionResult UpdateLesson(string lessonId, LessonUpdate lessonUpdate, [FromQuery(Name = "user")] string username)
+    public IActionResult UpdateLesson(int lessonId, LessonUpdate lessonUpdate, [FromQuery(Name = "user")] string username)
     {
         return _lessonProgressService.UpdateLesson(lessonId, lessonUpdate, username);
     }
@@ -26,7 +26,7 @@ public class LessonProgressController
     [HttpPost]
     [Route("start")]
     [Produces("application/json")]
-    public IActionResult StartLesson(string lessonId, DateTime date, [FromQuery(Name = "user")] string username)
+    public IActionResult StartLesson(int lessonId, DateTime date, [FromQuery(Name = "user")] string username)
     {
         return _lessonProgressService.StartLesson(lessonId, date, username);
     }
@@ -34,7 +34,7 @@ public class LessonProgressController
     [HttpPut]
     [Route("complete")]
     [Produces("application/json")]
-    public IActionResult CompleteLesson(string lessonId, DateTime date, [FromQuery(Name = "user")] string username)
+    public IActionResult CompleteLesson(int lessonId, DateTime date, [FromQuery(Name = "user")] string username)
     {
         return _lessonProgressService.CompleteLesson(lessonId, date, username);
     }

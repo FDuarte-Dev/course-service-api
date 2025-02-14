@@ -16,7 +16,6 @@ public class LessonProgressServiceShould
     private readonly Mock<ILessonProgressRepository> _lpRepository = new();
     
     private const int LessonProgressId = 1;
-    private const string LessonId = "1";
     private const string Username = "user1";
 
     private readonly User _user = new ()
@@ -39,7 +38,7 @@ public class LessonProgressServiceShould
 
     public LessonProgressServiceShould()
     {
-        _lessonRepository.Setup(x => x.GetLessonBy(LessonId))
+        _lessonRepository.Setup(x => x.GetLessonBy(_lesson.Id))
             .Returns(_lesson);
         _userRepository.Setup(x => x.GetUserBy(Username))
             .Returns(_user);
@@ -60,7 +59,7 @@ public class LessonProgressServiceShould
             .Returns(expectedLessonUpdate);
         
         // Act
-        var result = _service.UpdateLesson(LessonId, _lessonUpdate, Username);
+        var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
@@ -70,11 +69,11 @@ public class LessonProgressServiceShould
     public void ReturnNotFoundIfMissingLesson()
     {
         // Arrange
-        _lessonRepository.Setup(x => x.GetLessonBy(LessonId))
+        _lessonRepository.Setup(x => x.GetLessonBy(_lesson.Id))
             .Returns((Lesson?)null);
         
         // Act
-        var result = _service.UpdateLesson(LessonId, _lessonUpdate, Username);
+        var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
@@ -88,7 +87,7 @@ public class LessonProgressServiceShould
             .Returns((User?)null);
         
         // Act
-        var result = _service.UpdateLesson(LessonId, _lessonUpdate, Username);
+        var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
@@ -106,7 +105,7 @@ public class LessonProgressServiceShould
             .Returns(existing);
         
         // Act
-        var result = _service.StartLesson(LessonId, DateTime.Today, Username);
+        var result = _service.StartLesson(_lesson.Id, DateTime.Today, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
@@ -125,7 +124,7 @@ public class LessonProgressServiceShould
             .Returns(lessonProgress);
         
         // Act
-        var result = _service.StartLesson(LessonId, DateTime.Today, Username);
+        var result = _service.StartLesson(_lesson.Id, DateTime.Today, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
@@ -144,7 +143,7 @@ public class LessonProgressServiceShould
             .Returns(existing);
         
         // Act
-        var result = _service.CompleteLesson(LessonId, DateTime.Today, Username);
+        var result = _service.CompleteLesson(_lesson.Id, DateTime.Today, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
@@ -159,15 +158,12 @@ public class LessonProgressServiceShould
             .Returns((LessonProgress?)null);
         
         // Act
-        var result = _service.CompleteLesson(LessonId, _lessonUpdate.CompletionTime, Username);
+        var result = _service.CompleteLesson(_lesson.Id, _lessonUpdate.CompletionTime, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
 
     }
-    
-    private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime) 
-        => CreateLessonProgress(lesson, user, startTime, null);
     
     private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime, DateTime? completionTime) 
         => new()

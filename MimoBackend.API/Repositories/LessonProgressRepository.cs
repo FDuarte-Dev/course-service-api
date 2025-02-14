@@ -8,8 +8,7 @@ public interface ILessonProgressRepository
     LessonProgress AddLessonProgress(LessonProgress lessonProgress);
     LessonProgress? UpdateLessonProgressStartTime(int lessonProgressId, DateTime startTime);
     LessonProgress? UpdateLessonProgressCompletionTime(int lessonProgressId, DateTime completionTime);
-    List<LessonProgress> FindByLessonAndUser(Lesson? lesson, User? user);
-    LessonProgress? FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed);
+    LessonProgress? FindByLessonUserAndCompletion(Lesson lesson, User user, bool completed);
 }
 
 public class LessonProgressRepository : ILessonProgressRepository
@@ -26,16 +25,7 @@ public class LessonProgressRepository : ILessonProgressRepository
         return _context.LessonProgresses.Find(lessonProgressId);
     }
 
-    public List<LessonProgress> FindByLessonAndUser(Lesson? lesson, User? user)
-    {
-        return _context.LessonProgresses
-            .Where(x => 
-                x.LessonId == lesson.Id &&
-                x.UserUsername == user.Username)
-            .ToList();
-    }
-
-    public LessonProgress? FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed)
+    public LessonProgress? FindByLessonUserAndCompletion(Lesson lesson, User user, bool completed)
     {
         return _context.LessonProgresses
             .Where(x => 
