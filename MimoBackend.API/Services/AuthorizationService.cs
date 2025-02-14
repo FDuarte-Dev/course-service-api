@@ -8,7 +8,7 @@ namespace MimoBackend.API.Services;
 
 public interface IAuthorizationService
 {
-    Task<IActionResult> Authorize(Credentials credentials);
+    IActionResult Authorize(Credentials credentials);
 }
 
 public class AuthorizationService : BaseService, IAuthorizationService
@@ -22,9 +22,9 @@ public class AuthorizationService : BaseService, IAuthorizationService
         _tokenCache = tokenCache;
     }
 
-    public async Task<IActionResult> Authorize(Credentials credentials)
+    public IActionResult Authorize(Credentials credentials)
     {
-        var user = await _userRepository.GetUser(credentials.username);
+        var user = _userRepository.GetUserBy(credentials.username);
         if (UserNotFound(user))
         {
             return BuildResponse(StatusCodes.Status404NotFound);

@@ -27,12 +27,12 @@ public class AuthorizationServiceShould
     }
 
     [Fact]
-    public async Task ReturnValidTokenOnSuccessfulLogin()
+    public void ReturnValidTokenOnSuccessfulLogin()
     {
         // Arrange
         var credentials = new Credentials(Username, Password);
-        _userRepository.Setup(x => x.GetUser(Username))
-            .ReturnsAsync(new User()
+        _userRepository.Setup(x => x.GetUserBy(Username))
+            .Returns(new User()
             {
                 Username = Username,
                 Password = Password
@@ -44,7 +44,7 @@ public class AuthorizationServiceShould
             });
         
         // Act
-        var result = await _service.Authorize(credentials);
+        var result = _service.Authorize(credentials);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
@@ -52,15 +52,15 @@ public class AuthorizationServiceShould
     }
 
     [Fact]
-    public async Task ReturnNotFoundOnMissingUser()
+    public void ReturnNotFoundOnMissingUser()
     {
         // Arrange
         var credentials = new Credentials(Username, Password);
-        _userRepository.Setup(x => x.GetUser(Username))
-            .ReturnsAsync((User?)null);
+        _userRepository.Setup(x => x.GetUserBy(Username))
+            .Returns((User?)null);
         
         // Act
-        var result = await _service.Authorize(credentials);
+        var result = _service.Authorize(credentials);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
@@ -68,20 +68,20 @@ public class AuthorizationServiceShould
     }
 
     [Fact]
-    public async Task ReturnForbiddenOnIncorrectPassword()
+    public void ReturnForbiddenOnIncorrectPassword()
     {
         // Arrange
         const string otherPassword = "other-pwd";
         var credentials = new Credentials(Username, Password);
-        _userRepository.Setup(x => x.GetUser(Username))
-            .ReturnsAsync(new User()
+        _userRepository.Setup(x => x.GetUserBy(Username))
+            .Returns(new User()
             {
                 Username = Username,
                 Password = otherPassword
             });
         
         // Act
-        var result = await _service.Authorize(credentials);
+        var result = _service.Authorize(credentials);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status403Forbidden);

@@ -5,7 +5,7 @@ namespace MimoBackend.API.Repositories;
 
 public interface IUserRepository
 {
-    Task<User?> GetUser(string username);
+    User? GetUserBy(string username);
 }
 
 public class UserRepository : IUserRepository
@@ -17,8 +17,8 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetUser(string username)
+    public User? GetUserBy(string username)
     {
-        return await _context.Users.FindAsync(username);
+        return _context.Users.Find(username);
     }
 }

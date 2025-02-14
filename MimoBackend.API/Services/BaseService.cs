@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using MimoBackend.API.Models.DatabaseObjects;
 using Newtonsoft.Json;
 
 namespace MimoBackend.API.Services;
@@ -19,4 +20,38 @@ public abstract class BaseService
             Content = JsonConvert.SerializeObject(content),
             ContentType = MediaTypeNames.Application.Json
         };
+    
+    protected static bool UserNotFoundReturns(User? user, out IActionResult actionResult)
+    {
+        actionResult = null!;
+        if (UserNotFound())
+        {
+            {
+                actionResult = BuildResponse(StatusCodes.Status404NotFound, "User not found");
+                return true;
+            }
+        }
+
+        return false;
+        
+        bool UserNotFound() 
+            => user is null;
+    }
+    
+    protected static bool LessonNotFoundReturns(Lesson? lesson, out IActionResult actionResult)
+    {
+        actionResult = null!;
+        if (LessonNotFound())
+        {
+            {
+                actionResult = BuildResponse(StatusCodes.Status404NotFound, "Lesson not found");
+                return true;
+            }
+        }
+
+        return false;
+        
+        bool LessonNotFound() 
+            => lesson is null;
+    }
 }

@@ -20,8 +20,8 @@ public class UserController
     [HttpPost]
     [Route("authorize")]
     [Produces("application/json")]
-    public async Task<IActionResult> Authorize(Credentials credentials)
+    public IActionResult Authorize(Credentials credentials)
     {
-        return await _authorizationService.Authorize(credentials);
+        return _authorizationService.Authorize(credentials);
     }
 }

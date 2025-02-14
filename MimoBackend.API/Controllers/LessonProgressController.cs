@@ -18,24 +18,24 @@ public class LessonProgressController
     [HttpPost]
     [Route("update")]
     [Produces("application/json")]
-    public async Task<IActionResult> UpdateLesson(string lessonId, LessonUpdate lessonUpdate, [FromQuery(Name = "user")] string username)
+    public IActionResult UpdateLesson(string lessonId, LessonUpdate lessonUpdate, [FromQuery(Name = "user")] string username)
     {
-        return await _lessonProgressService.UpdateLesson(lessonId, lessonUpdate, username);
+        return _lessonProgressService.UpdateLesson(lessonId, lessonUpdate, username);
     }
     
     [HttpPost]
     [Route("start")]
     [Produces("application/json")]
-    public async Task<IActionResult> StartLesson(string lessonId, DateTime date, [FromQuery(Name = "user")] string username)
+    public IActionResult StartLesson(string lessonId, DateTime date, [FromQuery(Name = "user")] string username)
     {
-        return await _lessonProgressService.StartLesson(lessonId, date, username);
+        return _lessonProgressService.StartLesson(lessonId, date, username);
     }
     
     [HttpPut]
     [Route("complete")]
     [Produces("application/json")]
-    public async Task<IActionResult> CompleteLesson(string lessonId, DateTime date, [FromQuery(Name = "user")] string username)
+    public IActionResult CompleteLesson(string lessonId, DateTime date, [FromQuery(Name = "user")] string username)
     {
-        return await _lessonProgressService.CompleteLesson(lessonId, date, username);
+        return _lessonProgressService.CompleteLesson(lessonId, date, username);
     }
 }

@@ -1,29 +1,51 @@
-using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
+using MimoBackend.API.Persistence;
 
 namespace MimoBackend.API.Repositories;
 
 public interface ILessonProgressRepository
 {
-    Task<LessonProgress> UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username);
-    Task<LessonProgress> StartLesson(string lessonId, DateTime lessonUpdate, string username);
-    Task<LessonProgress> CompleteLesson(string lessonId, DateTime lessonUpdate, string username);
+    LessonProgress AddLessonProgress(LessonProgress lessonProgress);
+    LessonProgress UpdateLessonProgress(LessonProgress lessonProgress);
+    List<LessonProgress> FindByLessonAndUser(Lesson? lesson, User? user);
+    List<LessonProgress> FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed);
 }
 
 public class LessonProgressRepository : ILessonProgressRepository
 {
-    public Task<LessonProgress> UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username)
+    private readonly AppDbContext _context;
+
+    public LessonProgressRepository(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public Task<LessonProgress> StartLesson(string lessonId, DateTime lessonUpdate, string username)
+    public LessonProgress AddLessonProgress(LessonProgress lessonProgress)
     {
-        throw new NotImplementedException();
+        return _context.LessonProgresses.Add(lessonProgress).Entity;
     }
 
-    public Task<LessonProgress> CompleteLesson(string lessonId, DateTime lessonUpdate, string username)
+    public LessonProgress UpdateLessonProgress(LessonProgress lessonProgress)
     {
-        throw new NotImplementedException();
+        return _context.LessonProgresses.Update(lessonProgress).Entity;
+    }
+
+    public List<LessonProgress> FindByLessonAndUser(Lesson? lesson, User? user)
+    {
+        return _context.LessonProgresses
+            .Where(x => 
+                x.LessonId == lesson.Id &&
+                x.UserUsername == user.Username)
+            .ToList();
+    }
+
+    public List<LessonProgress> FindByLessonUserAndCompletion(Lesson? lesson, User? user, bool completed)
+    {
+        return _context.LessonProgresses
+            .Where(x => 
+                x.LessonId == lesson.Id &&
+                x.UserUsername == user.Username &&
+                !x.CompletionTime.HasValue)
+            .ToList();
     }
 }

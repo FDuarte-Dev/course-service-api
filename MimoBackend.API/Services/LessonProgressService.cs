@@ -7,44 +7,92 @@ namespace MimoBackend.API.Services;
 
 public interface ILessonProgressService
 {
-    Task<IActionResult> UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username);
-    Task<IActionResult> StartLesson(string lessonId, DateTime date, string username);
-    Task<IActionResult> CompleteLesson(string lessonId, DateTime date, string username);
+    IActionResult UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username);
+    IActionResult StartLesson(string lessonId, DateTime startTime, string username);
+    IActionResult CompleteLesson(string lessonId, DateTime completionDate, string username);
 }
 
 public class LessonProgressService : BaseService, ILessonProgressService
 {
+    private readonly ILessonRepository _lessonRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ILessonProgressRepository _lessonProgressRepository;
 
-    public LessonProgressService(ILessonProgressRepository lessonProgressRepository)
+    public LessonProgressService(ILessonRepository lessonRepository,
+        IUserRepository userRepository,
+        ILessonProgressRepository lessonProgressRepository)
     {
+        _lessonRepository = lessonRepository;
+        _userRepository = userRepository;
         _lessonProgressRepository = lessonProgressRepository;
     }
 
-    public async Task<IActionResult> UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username)
+    public IActionResult UpdateLesson(string lessonId, LessonUpdate lessonUpdate, string username)
     {
-        var lessonProgress = await _lessonProgressRepository.UpdateLesson(lessonId, lessonUpdate, username);
-        return LessonNotFound(lessonProgress) ? 
-            BuildResponse(StatusCodes.Status404NotFound) : 
-            BuildResponse(StatusCodes.Status200OK, lessonProgress);
+        var lesson = _lessonRepository.GetLessonBy(lessonId);
+        if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
+            return lessonNotFound;
+
+        var user = _userRepository.GetUserBy(username);
+        if (UserNotFoundReturns(user, out var userNotFound)) 
+            return userNotFound;
+
+        var lessonProgress = new LessonProgress()
+        {
+            LessonId = lesson.Id,
+            Lesson = lesson,
+            UserUsername = user.Username,
+            User = user,
+            StartTime = lessonUpdate.StartTime,
+            CompletionTime = lessonUpdate.CompletionTime
+        };
+        lessonProgress = _lessonProgressRepository.AddLessonProgress(lessonProgress);
+        return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
 
-    public async Task<IActionResult> StartLesson(string lessonId, DateTime date, string username)
+    public IActionResult StartLesson(string lessonId, DateTime startTime, string username)
     {
-        var lessonProgress = await _lessonProgressRepository.StartLesson(lessonId, date, username);
-        return LessonNotFound(lessonProgress) ? 
-            BuildResponse(StatusCodes.Status404NotFound) : 
-            BuildResponse(StatusCodes.Status200OK, lessonProgress);
+        var lesson = _lessonRepository.GetLessonBy(lessonId);
+        if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
+            return lessonNotFound;
+
+        var user = _userRepository.GetUserBy(username);
+        if (UserNotFoundReturns(user, out var userNotFound)) 
+            return userNotFound;
+        
+        var lessonProgresses = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, false);
+        // TODO: WIP
+        LessonProgress lessonProgress = new LessonProgress();
+        if (!lessonProgresses.Any())
+        {
+            lessonProgress = _lessonProgressRepository.AddLessonProgress(lessonProgress);
+        }
+        else
+        {
+            lessonProgress = _lessonProgressRepository.UpdateLessonProgress(lessonProgress);
+            
+        }
+        return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
 
-    public async Task<IActionResult> CompleteLesson(string lessonId, DateTime date, string username)
+    public IActionResult CompleteLesson(string lessonId, DateTime completionDate, string username)
     {
-        var lessonProgress = await _lessonProgressRepository.CompleteLesson(lessonId, date, username);
-        return LessonNotFound(lessonProgress) ? 
-            BuildResponse(StatusCodes.Status404NotFound) : 
-            BuildResponse(StatusCodes.Status200OK, lessonProgress);
+        var lesson = _lessonRepository.GetLessonBy(lessonId);
+        if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
+            return lessonNotFound;
+
+        var user = _userRepository.GetUserBy(username);
+        if (UserNotFoundReturns(user, out var userNotFound)) 
+            return userNotFound;
+        
+        // TODO: WIP
+        var lessonProgress = _lessonProgressRepository.FindByLessonAndUser(lesson, user);
+        // lessonProgress = _lessonProgressRepository.UpdateLessonProgress(lessonProgress);
+        return BuildResponse(StatusCodes.Status200OK, lessonProgress);
     }
-    
-    private static bool LessonNotFound(LessonProgress? lessonProgress) 
-        => lessonProgress is null;
+}
+
+public interface ILessonRepository
+{
+    Lesson? GetLessonBy(string lessonId);
 }

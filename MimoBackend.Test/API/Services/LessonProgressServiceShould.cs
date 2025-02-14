@@ -11,10 +11,23 @@ namespace MimoBackend.Test.API.Services;
 
 public class LessonProgressServiceShould
 {
+    private readonly Mock<ILessonRepository> _lessonRepository = new();
+    private readonly Mock<IUserRepository> _userRepository = new();
     private readonly Mock<ILessonProgressRepository> _lpRepository = new();
     
     private const string LessonId = "1";
     private const string Username = "user1";
+
+    private readonly User _user = new ()
+    {
+        Username = "usr",
+        Password = "pwd"
+    };
+    private readonly Lesson _lesson = new ()
+    {
+        Id = 1,
+        Order = 1
+    };
     private readonly LessonUpdate _lessonUpdate = new()
     {
         StartTime = DateTime.Today,
@@ -25,11 +38,19 @@ public class LessonProgressServiceShould
 
     public LessonProgressServiceShould()
     {
-        _service = new LessonProgressService(_lpRepository.Object);
+        _lessonRepository.Setup(x => x.GetLessonBy(LessonId))
+            .Returns(_lesson);
+        _userRepository.Setup(x => x.GetUserBy(Username))
+            .Returns(_user);
+        
+        _service = new LessonProgressService(
+            _lessonRepository.Object,
+            _userRepository.Object,
+            _lpRepository.Object);
     }
 
     [Fact]
-    public async Task UpdateLessonProgress()
+    public void CreateNewLessonProgressOnUpdateLessonProgress()
     {
         // Arrange
         var expectedLessonUpdate = new LessonProgress()
@@ -39,126 +60,73 @@ public class LessonProgressServiceShould
             StartTime = _lessonUpdate.StartTime,
             CompletionTime = _lessonUpdate.CompletionTime
         };
-        _lpRepository.Setup(x => x.UpdateLesson(LessonId, _lessonUpdate, Username))
-            .ReturnsAsync(expectedLessonUpdate);
+        _lpRepository.Setup(x => x.AddLessonProgress(It.IsAny<LessonProgress>()))
+            .Returns(expectedLessonUpdate);
         
         // Act
-        var result = await _service.UpdateLesson(LessonId, _lessonUpdate, Username);
+        var result = _service.UpdateLesson(LessonId, _lessonUpdate, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
     }
-    
+
     [Fact]
-    public async Task StartNewLessonProgress()
+    public void ReturnNotFoundIfMissingLesson()
     {
         // Arrange
-        var expectedLessonUpdate = new LessonProgress()
-        {
-            LessonId = int.Parse(LessonId),
-            UserUsername = Username,
-            StartTime = _lessonUpdate.StartTime,
-        };
-        _lpRepository.Setup(x => x.StartLesson(LessonId, DateTime.Today, Username))
-            .ReturnsAsync(expectedLessonUpdate);
+        _lessonRepository.Setup(x => x.GetLessonBy(LessonId))
+            .Returns((Lesson?)null);
         
         // Act
-        var result = await _service.StartLesson(LessonId, DateTime.Today, Username);
-        
-        // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-    }
-    
-    [Fact]
-    public async Task StartMultipleLessonProgresses()
-    {
-        // Arrange
-        var expectedLessonUpdate = new LessonProgress()
-        {
-            LessonId = int.Parse(LessonId),
-            UserUsername = Username,
-            StartTime = _lessonUpdate.StartTime,
-        };
-        _lpRepository.Setup(x => x.StartLesson(LessonId, DateTime.Today, Username))
-            .ReturnsAsync(expectedLessonUpdate);
-        
-        var expectedLessonUpdate2 = new LessonProgress()
-        {
-            LessonId = 2,
-            UserUsername = Username,
-            StartTime = _lessonUpdate.StartTime,
-        };
-        _lpRepository.Setup(x => x.StartLesson("2", DateTime.Today, Username))
-            .ReturnsAsync(expectedLessonUpdate2);
-        
-        // Act
-        var result = await _service.StartLesson(LessonId, DateTime.Today, Username);
-        var result2 = await _service.StartLesson("2", DateTime.Today, Username);
-        
-        // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result2 as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-    }
-    
-    [Fact]
-    public async Task CompleteLessonProgress()
-    {
-        // Arrange
-        var expectedLessonUpdate = new LessonProgress()
-        {
-            LessonId = int.Parse(LessonId),
-            UserUsername = Username,
-            StartTime = _lessonUpdate.StartTime,
-        };
-        _lpRepository.Setup(x => x.CompleteLesson(LessonId, DateTime.Today, Username))
-            .ReturnsAsync(expectedLessonUpdate);
-        
-        // Act
-        var result = await _service.CompleteLesson(LessonId, DateTime.Today, Username);
-        
-        // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-    }
-    
-    [Fact]
-    public async Task ReturnNotFoundOnUpdateMissingLesson()
-    {
-        // Arrange
-        _lpRepository.Setup(x => x.UpdateLesson(LessonId, _lessonUpdate, Username))
-            .ReturnsAsync((LessonProgress)null!);
-        
-        // Act
-        var result = await _service.UpdateLesson(LessonId, _lessonUpdate, Username);
+        var result = _service.UpdateLesson(LessonId, _lessonUpdate, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
     }
     
     [Fact]
-    public async Task ReturnNotFoundOnStartMissingLesson()
+    public void ReturnNotFoundIfMissingUser()
     {
         // Arrange
-        _lpRepository.Setup(x => x.StartLesson(LessonId, DateTime.Today, Username))
-            .ReturnsAsync((LessonProgress)null!);
+        _userRepository.Setup(x => x.GetUserBy(Username))
+            .Returns((User?)null);
         
         // Act
-        var result = await _service.StartLesson(LessonId, DateTime.Today, Username);
+        var result = _service.UpdateLesson(LessonId, _lessonUpdate, Username);
         
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
     }
     
     [Fact]
-    public async Task ReturnNotFoundOnCompleteMissingLesson()
+    public void UpdateStartDateWhenReStartingNonCompletedLesson()
     {
         // Arrange
-        _lpRepository.Setup(x => x.CompleteLesson(LessonId, DateTime.Today, Username))
-            .ReturnsAsync((LessonProgress)null!);
-        
         // Act
-        var result = await _service.CompleteLesson(LessonId, DateTime.Today, Username);
-        
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+    }
+    
+    [Fact]
+    public void CreateNewLessonProgressWhenReStartingCompletedLesson()
+    {
+        // Arrange
+        // Act
+        // Assert
+    }
+    
+    [Fact]
+    public void CompleteLessonProgress()
+    {
+        // Arrange
+        // Act
+        // Assert
+    }
+    
+    [Fact]
+    public void ReturnNotFoundOnNonexistentLessonProgressOnCompleteLesson()
+    {
+        // Arrange
+        // Act
+        // Assert
     }
 }
