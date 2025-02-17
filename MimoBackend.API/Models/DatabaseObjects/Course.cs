@@ -12,3 +12,13 @@ public class Course
     public string Name { get; set; }
     public ICollection<Chapter> Chapters { get; set; }
 }
+
+public sealed class NotFoundCourse : Course, NotFoundObject
+{
+    private NotFoundCourse() { }
+    private static readonly NotFoundCourse Course = new();
+    public static NotFoundCourse GetNotFoundCourse()
+    {
+        return Course;
+    }
+}

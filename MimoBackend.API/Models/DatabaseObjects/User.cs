@@ -10,3 +10,13 @@ public class User
     public string Username { get; set; }
     public string Password { get; set; }
 }
+
+public sealed class NotFoundUser : User, NotFoundObject
+{
+    private NotFoundUser() { }
+    private static readonly NotFoundUser User = new();
+    public static NotFoundUser GetNotFoundUser()
+    {
+        return User;
+    }
+}

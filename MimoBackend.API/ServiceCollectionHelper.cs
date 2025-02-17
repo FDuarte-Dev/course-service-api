@@ -14,6 +14,7 @@ public static class ServiceCollectionHelper
         services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IAchievementService, AchievementService>();
         services.AddScoped<ILessonProgressService, LessonProgressService>();
+        services.AddScoped<IUserAchievementService, UserAchievementService>();
     }
     
     public static void SetRepositories(this IServiceCollection services)
@@ -22,6 +23,7 @@ public static class ServiceCollectionHelper
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<IAchievementRepository, AchievementRepository>();
         services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
+        services.AddScoped<IUserAchievementRepository, UserAchievementRepository>();
     }
     
     public static void SetPersistence(this IServiceCollection services)

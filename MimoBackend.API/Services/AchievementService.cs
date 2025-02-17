@@ -1,14 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
+using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Repositories;
 
 namespace MimoBackend.API.Services;
 
 public interface IAchievementService
 {
-    IActionResult GetAchievements(string username);
+    IEnumerable<Achievement> GetAchievements(string username);
 }
 
-public class AchievementService : BaseService, IAchievementService
+public class AchievementService : IAchievementService
 {
     private readonly IAchievementRepository _achievementRepository;
 
@@ -17,8 +17,8 @@ public class AchievementService : BaseService, IAchievementService
         _achievementRepository = achievementRepository;
     }
 
-    public IActionResult GetAchievements(string username)
+    public IEnumerable<Achievement> GetAchievements(string username)
     {
-        return BuildResponse(StatusCodes.Status200OK, _achievementRepository.GetAchievements());
+        return _achievementRepository.GetAchievements();
     }
 }

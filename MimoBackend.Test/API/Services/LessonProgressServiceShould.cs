@@ -11,8 +11,11 @@ namespace MimoBackend.Test.API.Services;
 
 public class LessonProgressServiceShould
 {
-    private readonly Mock<ILessonRepository> _lessonRepository = new();
-    private readonly Mock<IUserRepository> _userRepository = new();
+    private readonly Mock<IChapterService> _chapterService = new();
+    private readonly Mock<ICourseService> _courseService = new();
+    private readonly Mock<IUserAchievementService> _userAchievementService = new();
+    private readonly Mock<ILessonService> _lessonService = new();
+    private readonly Mock<IUserService> _userService = new();
     private readonly Mock<ILessonProgressRepository> _lpRepository = new();
     
     private const int LessonProgressId = 1;
@@ -38,16 +41,21 @@ public class LessonProgressServiceShould
 
     public LessonProgressServiceShould()
     {
-        _lessonRepository.Setup(x => x.GetLessonBy(_lesson.Id))
+        _lessonService.Setup(x => x.GetLessonBy(_lesson.Id))
             .Returns(_lesson);
-        _userRepository.Setup(x => x.GetUserBy(Username))
+        _userService.Setup(x => x.GetUserBy(Username))
             .Returns(_user);
         
         _service = new LessonProgressService(
-            _lessonRepository.Object,
-            _userRepository.Object,
+            _chapterService.Object,
+            _courseService.Object,
+            _userAchievementService.Object,
+            _lessonService.Object,
+            _userService.Object,
             _lpRepository.Object);
     }
+
+    #region UpdateLesson
 
     [Fact]
     public void CreateNewLessonProgressOnUpdateLessonProgress()
@@ -69,7 +77,7 @@ public class LessonProgressServiceShould
     public void ReturnNotFoundIfMissingLesson()
     {
         // Arrange
-        _lessonRepository.Setup(x => x.GetLessonBy(_lesson.Id))
+        _lessonService.Setup(x => x.GetLessonBy(_lesson.Id))
             .Returns((Lesson?)null);
         
         // Act
@@ -83,7 +91,7 @@ public class LessonProgressServiceShould
     public void ReturnNotFoundIfMissingUser()
     {
         // Arrange
-        _userRepository.Setup(x => x.GetUserBy(Username))
+        _userService.Setup(x => x.GetUserBy(Username))
             .Returns((User?)null);
         
         // Act
@@ -92,7 +100,11 @@ public class LessonProgressServiceShould
         // Assert
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
     }
-    
+
+    #endregion
+
+    #region StartLesson
+
     [Fact]
     public void UpdateStartDateWhenReStartingNonCompletedLesson()
     {
@@ -130,7 +142,11 @@ public class LessonProgressServiceShould
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
         (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
     }
-    
+
+    #endregion
+
+    #region CompleteLesson
+
     [Fact]
     public void CompleteLessonProgress()
     {
@@ -164,6 +180,49 @@ public class LessonProgressServiceShould
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
 
     }
+
+    #endregion
+
+    #region UserAchievementUpdates
+
+    [Fact]
+    public void UpdateLessonUserAchievementsOnUpdatedLesson()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+    
+    [Fact]
+    public void UpdateLessonUserAchievementsOnCompletedLesson()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+    
+    [Fact]
+    public void UpdateChapterUserAchievementsOnCompletedChapter()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+    
+    [Fact]
+    public void UpdateCourseUserAchievementsOnCompletedCourse()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+
+    #endregion
+    
     
     private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime, DateTime? completionTime) 
         => new()

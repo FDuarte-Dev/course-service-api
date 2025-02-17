@@ -21,6 +21,30 @@ public class LessonServiceShould
         _service = new LessonService(_lessonRepository.Object);
     }
 
+    #region GetLessonBy
+
+    [Fact]
+    public void OK()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+    
+    [Fact]
+    public void NOTOK()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+
+    #endregion
+
+    #region GetLessons
+
     [Fact]
     public void ReturnSuccessWithEmptyListOnNoLessonsFound()
     {
@@ -51,4 +75,6 @@ public class LessonServiceShould
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
         (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
     }
+
+    #endregion
 }

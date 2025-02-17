@@ -26,6 +26,8 @@ public class AuthorizationServiceShould
         _service = new AuthorizationService(_userRepository.Object, _tokenCache.Object);
     }
 
+    #region Authorize
+
     [Fact]
     public void ReturnValidTokenOnSuccessfulLogin()
     {
@@ -87,4 +89,6 @@ public class AuthorizationServiceShould
         (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
         (result as ContentResult)!.Content.Should().BeNullOrWhiteSpace();
     }
+
+    #endregion
 }

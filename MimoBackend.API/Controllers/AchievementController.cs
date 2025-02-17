@@ -5,7 +5,7 @@ namespace MimoBackend.API.Controllers;
 
 [ApiController]
 [Route("achievements")]
-public class AchievementController
+public class AchievementController: BaseController
 {
     private readonly IAchievementService _achievementService;
 
@@ -19,6 +19,6 @@ public class AchievementController
     [Produces("application/json")]
     public IActionResult GetAchievements([FromQuery(Name = "user")] string username)
     {
-        return _achievementService.GetAchievements(username);
+        return BuildResponse(_achievementService.GetAchievements(username));
     }
 }

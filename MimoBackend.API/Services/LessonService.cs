@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Repositories;
 
 namespace MimoBackend.API.Services;
 
 public interface ILessonService
 {
+    Lesson? GetLessonBy(int lessonId);
     IActionResult GetLessons(string username);
 }
 
@@ -15,6 +17,11 @@ public class LessonService : BaseService, ILessonService
     public LessonService(ILessonRepository lessonRepository)
     {
         _lessonRepository = lessonRepository;
+    }
+
+    public Lesson? GetLessonBy(int lessonId)
+    {
+        throw new NotImplementedException();
     }
 
     public IActionResult GetLessons(string username)

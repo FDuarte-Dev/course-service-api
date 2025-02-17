@@ -8,11 +8,9 @@ using Moq;
 
 namespace MimoBackend.Test.API.Services;
 
-public class AchievementServiceShould
+public class AchievementServiceShould : BaseServiceTest
 {
     private readonly Mock<IAchievementRepository> _achievementRepository = new();
-
-    private const string Username = "user1";
 
     private readonly AchievementService _service;
 
@@ -21,8 +19,10 @@ public class AchievementServiceShould
         _service = new AchievementService(_achievementRepository.Object);
     }
 
+    #region GetAchievements
+
     [Fact]
-    public void ReturnSuccessWithEmptyListOnNoLessonsFound()
+    public void ReturnEmptyListOnNoLessonsFound()
     {
         // Arrange
         _achievementRepository.Setup(x => x.GetAchievements())
@@ -32,8 +32,7 @@ public class AchievementServiceShould
         var result = _service.GetAchievements(Username);
 
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result as ContentResult)!.Content.Should().Contain("[]");
+        result.Should().BeEmpty();
     }
     
     [Fact]
@@ -48,7 +47,9 @@ public class AchievementServiceShould
         var result = _service.GetAchievements(Username);
 
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
+        result.Should().NotBeEmpty();
+        result.First().Id.Should().Be(1);
     }
+
+    #endregion
 }
