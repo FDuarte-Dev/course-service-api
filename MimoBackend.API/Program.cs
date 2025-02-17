@@ -42,7 +42,7 @@ app.Run();
 return;
 
 bool RequireAuthorization(HttpContext httpContext) 
-    => httpContext.Request.Path.StartsWithSegments("/lessons");
+    => !httpContext.Request.Path.StartsWithSegments("/users/authorize");
     
 void SetSerializationRules()
 {

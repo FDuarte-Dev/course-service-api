@@ -5,8 +5,8 @@ namespace MimoBackend.API.Repositories;
 
 public interface ILessonRepository
 {
-    Lesson? GetLessonBy(int lessonId);
     IEnumerable<Lesson> GetLessons();
+    Lesson? GetLessonBy(int lessonId);
 }
 
 public class LessonRepository : ILessonRepository

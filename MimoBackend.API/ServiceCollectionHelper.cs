@@ -12,6 +12,7 @@ public static class ServiceCollectionHelper
     {
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<ILessonService, LessonService>();
+        services.AddScoped<IAchievementService, AchievementService>();
         services.AddScoped<ILessonProgressService, LessonProgressService>();
     }
     
@@ -19,6 +20,7 @@ public static class ServiceCollectionHelper
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ILessonRepository, LessonRepository>();
+        services.AddScoped<IAchievementRepository, AchievementRepository>();
         services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
     }
     
