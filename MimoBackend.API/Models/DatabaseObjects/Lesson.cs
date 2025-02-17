@@ -13,3 +13,13 @@ public class Lesson
     public int ChapterId { get; set; }
     public Chapter Chapter { get; set; }
 }
+
+public sealed class NotFoundLesson : Lesson, NotFoundObject
+{
+    private NotFoundLesson() { }
+    private static readonly NotFoundLesson Lesson = new();
+    public static NotFoundLesson GetNotFoundLesson()
+    {
+        return Lesson;
+    }
+}

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Repositories;
 
@@ -6,11 +5,11 @@ namespace MimoBackend.API.Services;
 
 public interface ILessonService
 {
-    Lesson? GetLessonBy(int lessonId);
-    IActionResult GetLessons(string username);
+    Lesson GetLessonBy(int lessonId);
+    IEnumerable<Lesson> GetLessons();
 }
 
-public class LessonService : BaseService, ILessonService
+public class LessonService : ILessonService
 {
     private readonly ILessonRepository _lessonRepository;
 
@@ -19,14 +18,12 @@ public class LessonService : BaseService, ILessonService
         _lessonRepository = lessonRepository;
     }
 
-    public Lesson? GetLessonBy(int lessonId)
-    {
-        throw new NotImplementedException();
-    }
+    public Lesson GetLessonBy(int lessonId) 
+        => _lessonRepository.GetLessonBy(lessonId) ?? NotFoundLesson.GetNotFoundLesson();
 
-    public IActionResult GetLessons(string username)
+    public IEnumerable<Lesson> GetLessons()
     {
         var lessons = _lessonRepository.GetLessons();
-        return BuildResponse(StatusCodes.Status200OK, lessons);
+        return lessons;
     }
 }

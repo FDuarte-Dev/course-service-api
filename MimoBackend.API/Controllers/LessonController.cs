@@ -5,7 +5,7 @@ namespace MimoBackend.API.Controllers;
 
 [ApiController]
 [Route("lessons")]
-public class LessonController
+public class LessonController : BaseController
 {
     private readonly ILessonService _lessonService;
 
@@ -17,8 +17,8 @@ public class LessonController
     [HttpGet]
     [Route("")]
     [Produces("application/json")]
-    public IActionResult GetLessons([FromQuery(Name = "user")] string username)
+    public IActionResult GetLessons()
     {
-        return _lessonService.GetLessons(username);
+        return BuildResponse(_lessonService.GetLessons());
     }
 }

@@ -12,8 +12,6 @@ public class LessonServiceShould
 {
     private readonly Mock<ILessonRepository> _lessonRepository = new();
 
-    private const string Username = "user1";
-
     private readonly LessonService _service;
 
     public LessonServiceShould()
@@ -24,21 +22,37 @@ public class LessonServiceShould
     #region GetLessonBy
 
     [Fact]
-    public void OK()
+    public void ReturnChapterIfItExists()
     {
         // Arrange
+        var expectedLesson = new Lesson(){Id = 1};
+        
+        _lessonRepository.Setup(x => x.GetLessonBy(1))
+            .Returns(expectedLesson);
+        
         // Act
+        var result = _service.GetLessonBy(1);
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeNull();
+        result.Id.Should().Be(1);
     }
     
     [Fact]
-    public void NOTOK()
+    public void ReturnNotFoundChapterIfItDoesNotExist()
     {
         // Arrange
+        var expectedLesson = NotFoundLesson.GetNotFoundLesson();
+        
+        _lessonRepository.Setup(x => x.GetLessonBy(1))
+            .Returns((Lesson?)null);
+        
         // Act
+        var result = _service.GetLessonBy(1);
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeNull();
+        result.Should().Be(expectedLesson);
     }
 
     #endregion
@@ -53,11 +67,10 @@ public class LessonServiceShould
             .Returns([]);
         
         // Act
-        var result = _service.GetLessons(Username);
+        var result = _service.GetLessons();
 
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result as ContentResult)!.Content.Should().Contain("[]");
+        result.Should().BeEmpty();
     }
     
     [Fact]
@@ -69,11 +82,11 @@ public class LessonServiceShould
             .Returns(lessons);
         
         // Act
-        var result = _service.GetLessons(Username);
+        var result = _service.GetLessons();
 
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
+        result.Should().NotBeEmpty();
+        result.First().Id.Should().Be(1);
     }
 
     #endregion
