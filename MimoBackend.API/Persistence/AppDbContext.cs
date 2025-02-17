@@ -17,12 +17,15 @@ public sealed class AppDbContext : DbContext
         : base(options)
     {
         Database.EnsureCreated();
+    }
+    
+    public void PopulateDb()
+    {
         ClearContext();
         PopulateContext();
     }
 
-    
-        private void ClearContext()
+    private void ClearContext()
     {
         Users.RemoveRange(Users);
         Courses.RemoveRange(Courses);

@@ -11,6 +11,7 @@ public static class ServiceCollectionHelper
     public static void SetServices(this IServiceCollection services)
     {
         services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<ILessonProgressService, LessonProgressService>();
     }
     

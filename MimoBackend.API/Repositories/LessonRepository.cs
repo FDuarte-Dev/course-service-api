@@ -6,6 +6,7 @@ namespace MimoBackend.API.Repositories;
 public interface ILessonRepository
 {
     Lesson? GetLessonBy(int lessonId);
+    IEnumerable<Lesson> GetLessons();
 }
 
 public class LessonRepository : ILessonRepository
@@ -17,8 +18,13 @@ public class LessonRepository : ILessonRepository
         _context = context;
     }
     
+    public IEnumerable<Lesson> GetLessons()
+    {
+        return _context.Lessons.AsEnumerable();
+    }
+    
     public Lesson? GetLessonBy(int lessonId)
     {
-        return _context.Lessons.Find(lessonId);
+        return _context.Lessons.FirstOrDefault(x => x.Id == lessonId);
     }
 }

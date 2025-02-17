@@ -22,7 +22,7 @@ public class LessonProgressRepository : ILessonProgressRepository
 
     private LessonProgress? GetLessonProgressById(int lessonProgressId)
     {
-        return _context.LessonProgresses.Find(lessonProgressId);
+        return _context.LessonProgresses.FirstOrDefault(x => x.Id == lessonProgressId);
     }
 
     public LessonProgress? FindByLessonUserAndCompletion(Lesson lesson, User user, bool completed)

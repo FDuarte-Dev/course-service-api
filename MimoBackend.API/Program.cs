@@ -1,5 +1,7 @@
 using MimoBackend.API;
 using MimoBackend.API.Middlewares;
+using MimoBackend.API.Persistence;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,10 +35,29 @@ app.UseWhen(RequireAuthorization, appBuilder =>
     appBuilder.UseMiddleware<UserAuthorizationMiddleware>();
 });
 
-
+SetSerializationRules();
+PopulateDb(app);
 
 app.Run();
 return;
 
 bool RequireAuthorization(HttpContext httpContext) 
     => httpContext.Request.Path.StartsWithSegments("/lessons");
+    
+void SetSerializationRules()
+{
+    JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
+    {
+        Formatting = Formatting.Indented,
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+    };
+}
+
+static void PopulateDb(IApplicationBuilder app)
+{
+    using (var scope = app.ApplicationServices.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        context.PopulateDb();
+    }
+}
