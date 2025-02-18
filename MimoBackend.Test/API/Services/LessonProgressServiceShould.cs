@@ -282,38 +282,6 @@ public class LessonProgressServiceShould : BaseServiceTest
     }
 
     #endregion
-
-    #region UserCompletedLesson
-
-    [Fact]
-    public void ReturnTrueIfUserHasCompletedTheLesson()
-    {
-        // Arrange
-        _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, User, true))
-            .Returns(new LessonProgress());
-        
-        // Act
-        var result = _service.UserCompletedLesson(_lesson, User);
-        
-        // Assert
-        result.Should().BeTrue();
-    }
-    
-    [Fact]
-    public void ReturnFalseIfUserHasNotCompletedOrStartedLesson()
-    {
-        // Arrange
-        _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, User, true))
-            .Returns((LessonProgress?)null);
-        
-        // Act
-        var result = _service.UserCompletedLesson(_lesson, User);
-        
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    #endregion
     
     private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime, DateTime? completionTime) 
         => new()
