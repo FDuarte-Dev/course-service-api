@@ -1,3 +1,5 @@
+using FluentAssertions;
+using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Repositories;
 using MimoBackend.API.Services;
@@ -7,8 +9,8 @@ namespace MimoBackend.Test.API.Services;
 
 public class UserAchievementServiceShould
 {
-    private readonly Mock<IAchievementRepository> _achievementRepository = new();
-    private readonly Mock<IUserRepository> _userRepository = new();
+    private readonly Mock<IUserService> _userService = new();
+    private readonly Mock<IAchievementService> _achievementService = new();
     private readonly Mock<IUserAchievementRepository> _userAchievementRepository = new();
 
     private const string Username = "user1";
@@ -23,51 +25,60 @@ public class UserAchievementServiceShould
 
     public UserAchievementServiceShould()
     {
-        _userRepository.Setup(x => x.GetUserBy(Username))
+        _userService.Setup(x => x.GetUserBy(Username))
             .Returns(_user);
         
         _service = new UserAchievementService(
-            _userRepository.Object,
-            _achievementRepository.Object,
+            _userService.Object,
+            _achievementService.Object,
             _userAchievementRepository.Object);
     }
 
     #region GetUserAchievements
 
     [Fact]
-    public void ReturnNotFoundIfMissingUser()
+    public void ReturnEmptyListIfMissingUser()
     {
         // Arrange
+        _userService.Setup(x => x.GetUserBy(Username))
+            .Returns(NotFoundUser.GetNotFoundUser);
+        
         // Act
+        var result = _service.GetUserAchievements(Username);
+        
         // Assert
-        Assert.Fail();
-    }
-    
-    [Fact]
-    public void ReturnNotFoundIfNoAchievementsFound()
-    {
-        // Arrange
-        // Act
-        // Assert
-        Assert.Fail();
+        result.Should().BeEmpty();
     }
     
     [Fact]
     public void ReturnUserAchievements()
     {
         // Arrange
+        IEnumerable<UserAchievement> userAchievements = new List<UserAchievement> { new (){Id = 1} };
+        _userAchievementRepository.Setup(x => x.GetUserAchievements(_user))
+            .Returns(userAchievements);
+        
         // Act
+        var result = _service.GetUserAchievements(Username).ToList();
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeEmpty();
+        result.First().Id.Should().Be(1);
     }
     
     [Fact]
-    public void ReturnSuccessfulEmptyListIfUserHasNoAchievements()
+    public void ReturnEmptyListIfUserHasNoAchievements()
     {
         // Arrange
+        IEnumerable<UserAchievement> userAchievements = new List<UserAchievement>();
+        _userAchievementRepository.Setup(x => x.GetUserAchievements(_user))
+            .Returns(userAchievements);
+        
         // Act
+        var result = _service.GetUserAchievements(Username).ToList();
+        
         // Assert
-        Assert.Fail();
+        result.Should().BeEmpty();
     }
 
     #endregion
@@ -78,18 +89,32 @@ public class UserAchievementServiceShould
     public void ReturnCompletedUserAchievements()
     {
         // Arrange
+        IEnumerable<UserAchievement> userAchievements = new List<UserAchievement> { new (){Id = 1, Completed = true} };
+        _userAchievementRepository.Setup(x => x.GetCompletedUserAchievements(_user))
+            .Returns(userAchievements);
+        
         // Act
+        var result = _service.GetCompletedUserAchievements(Username).ToList();
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeEmpty();
+        result.First().Id.Should().Be(1);
+        result.First().Completed.Should().BeTrue();
     }
     
     [Fact]
     public void ReturnSuccessfulEmptyListIfUserHasNoCompletedAchievements()
     {
         // Arrange
+        IEnumerable<UserAchievement> userAchievements = new List<UserAchievement> ();
+        _userAchievementRepository.Setup(x => x.GetCompletedUserAchievements(_user))
+            .Returns(userAchievements);
+        
         // Act
+        var result = _service.GetCompletedUserAchievements(Username).ToList();
+        
         // Assert
-        Assert.Fail();
+        result.Should().BeEmpty();
     }
 
     #endregion
@@ -100,18 +125,32 @@ public class UserAchievementServiceShould
     public void ReturnOngoingUserAchievements()
     {
         // Arrange
+        IEnumerable<UserAchievement> userAchievements = new List<UserAchievement> { new (){Id = 1, Completed = false} };
+        _userAchievementRepository.Setup(x => x.GetUserAchievementsInProgress(_user))
+            .Returns(userAchievements);
+        
         // Act
+        var result = _service.GetOngoingUserAchievements(Username).ToList();
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeEmpty();
+        result.First().Id.Should().Be(1);
+        result.First().Completed.Should().BeFalse();
     }
     
     [Fact]
     public void ReturnSuccessfulEmptyListIfUserHasNoOngoingAchievements()
     {
         // Arrange
+        IEnumerable<UserAchievement> userAchievements = new List<UserAchievement> ();
+        _userAchievementRepository.Setup(x => x.GetUserAchievementsInProgress(_user))
+            .Returns(userAchievements);
+        
         // Act
+        var result = _service.GetOngoingUserAchievements(Username).ToList();
+        
         // Assert
-        Assert.Fail();
+        result.Should().BeEmpty();
     }
 
     #endregion
@@ -124,27 +163,52 @@ public class UserAchievementServiceShould
     public void UpdateUserAchievementWithLessonAndUser()
     {
         // Arrange
+        var lessonAchievement = new Achievement(){ Type = AchievementType.CompletedLessons};
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedLessons))
+            .Returns(new List<Achievement>(){lessonAchievement});
+        
+        UserAchievement userAchievement = new (){Id = 1, Completed = false};
+        _userAchievementRepository.Setup(x => x.GetUserAchievementByAchievementUserAndCompletion(lessonAchievement, _user, false))
+            .Returns(userAchievement);
+        
         // Act
+        _service.UpdateLessonUserAchievement(_user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(userAchievement), Times.Once);
     }
     
     [Fact]
-    public void NotUpdateUserAchievementIfLessonNotFound()
+    public void NotUpdateUserAchievementIfAchievementNotFound()
     {
         // Arrange
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedLessons))
+            .Returns(new List<Achievement>());
+        
         // Act
+        _service.UpdateLessonUserAchievement(_user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(It.IsAny<UserAchievement>()), Times.Never);
     }
 
     [Fact]
-    public void NotUpdateLessonUserAchievementIfUserNotFound()
+    public void CreateUserAchievementBeforeUpdatingIfUserAchievementNotFound()
     {
         // Arrange
+        var lessonAchievement = new Achievement(){ Type = AchievementType.CompletedLessons};
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedLessons))
+            .Returns(new List<Achievement>(){lessonAchievement});
+        
+        _userAchievementRepository.Setup(x => x.GetUserAchievementByAchievementUserAndCompletion(lessonAchievement, _user, false))
+            .Returns((UserAchievement?)null);
+        
         // Act
+        _service.UpdateLessonUserAchievement(_user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.CreateUserAchievement(It.IsAny<UserAchievement>()), Times.Once);
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(It.IsAny<UserAchievement>()), Times.Once);
     }
 
     #endregion
@@ -155,27 +219,52 @@ public class UserAchievementServiceShould
     public void UpdateUserAchievementWithChapterAndUser()
     {
         // Arrange
+        var achievement = new Achievement(){ Type = AchievementType.CompletedChapters};
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedChapters))
+            .Returns(new List<Achievement>(){achievement});
+        
+        UserAchievement userAchievement = new (){Id = 1, Completed = false};
+        _userAchievementRepository.Setup(x => x.GetUserAchievementByAchievementUserAndCompletion(achievement, _user, false))
+            .Returns(userAchievement);
+        
         // Act
+        _service.UpdateChapterUserAchievement(_user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(userAchievement), Times.Once);
     }
     
     [Fact]
     public void NotUpdateUserAchievementIfChapterNotFound()
     {
         // Arrange
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedChapters))
+            .Returns(new List<Achievement>());
+        
         // Act
+        _service.UpdateChapterUserAchievement(_user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(It.IsAny<UserAchievement>()), Times.Never);
     }
     
     [Fact]
     public void NotUpdateChapterUserAchievementIfUserNotFound()
     {
         // Arrange
+        var achievement = new Achievement(){ Type = AchievementType.CompletedChapters};
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedChapters))
+            .Returns(new List<Achievement>(){achievement});
+        
+        _userAchievementRepository.Setup(x => x.GetUserAchievementByAchievementUserAndCompletion(achievement, _user, false))
+            .Returns((UserAchievement?)null);
+        
         // Act
+        _service.UpdateChapterUserAchievement(_user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.CreateUserAchievement(It.IsAny<UserAchievement>()), Times.Once);
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(It.IsAny<UserAchievement>()), Times.Once);
     }
 
     #endregion
@@ -186,27 +275,57 @@ public class UserAchievementServiceShould
     public void UpdateUserAchievementWithCourseAndUser()
     {
         // Arrange
+        var course = new Course { Name = "TEST" };
+        var achievement = new Achievement(){ Type = AchievementType.CompletedCourses, Name = "TEST Course"};
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedCourses))
+            .Returns(new List<Achievement>(){achievement});
+        
+        UserAchievement userAchievement = new (){Id = 1, Completed = false};
+        _userAchievementRepository.Setup(x => x.GetUserAchievementByAchievementUserAndCompletion(achievement, _user, false))
+            .Returns(userAchievement);
+        
         // Act
+        _service.UpdateCourseUserAchievement(course, _user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(userAchievement), Times.Once);
+
     }
     
     [Fact]
     public void NotUpdateUserAchievementIfCourseNotFound()
     {
         // Arrange
+        var course = new Course { Name = "TEST" };
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedCourses))
+            .Returns(new List<Achievement>());
+        
         // Act
+        _service.UpdateCourseUserAchievement(course, _user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(It.IsAny<UserAchievement>()), Times.Never);
     }
     
     [Fact]
     public void NotUpdateCourseUserAchievementIfUserNotFound()
     {
         // Arrange
+        var course = new Course { Name = "TEST" };
+        var achievement = new Achievement(){ Type = AchievementType.CompletedCourses, Name = "TEST Course"};
+        _achievementService.Setup(x => x.GetAchievementsOfType(AchievementType.CompletedCourses))
+            .Returns(new List<Achievement>(){achievement});
+        
+        _userAchievementRepository.Setup(x => x.GetUserAchievementByAchievementUserAndCompletion(achievement, _user, false))
+            .Returns((UserAchievement?)null);
+        
         // Act
+        _service.UpdateCourseUserAchievement(course, _user);
+        
         // Assert
-        Assert.Fail();
+        _userAchievementRepository.Verify(x => x.CreateUserAchievement(It.IsAny<UserAchievement>()), Times.Once);
+        _userAchievementRepository.Verify(x => x.UpdateUserAchievement(It.IsAny<UserAchievement>()), Times.Once);
+
     }
 
     #endregion

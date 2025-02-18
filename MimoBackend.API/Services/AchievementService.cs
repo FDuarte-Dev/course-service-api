@@ -1,3 +1,4 @@
+using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Repositories;
 
@@ -5,7 +6,8 @@ namespace MimoBackend.API.Services;
 
 public interface IAchievementService
 {
-    IEnumerable<Achievement> GetAchievements(string username);
+    IEnumerable<Achievement> GetAchievements();
+    IEnumerable<Achievement> GetAchievementsOfType(AchievementType achievementType);
 }
 
 public class AchievementService : IAchievementService
@@ -17,8 +19,13 @@ public class AchievementService : IAchievementService
         _achievementRepository = achievementRepository;
     }
 
-    public IEnumerable<Achievement> GetAchievements(string username)
+    public IEnumerable<Achievement> GetAchievements()
     {
         return _achievementRepository.GetAchievements();
+    }
+
+    public IEnumerable<Achievement> GetAchievementsOfType(AchievementType achievementType)
+    {
+        return _achievementRepository.GetAchievementsOfType(achievementType);
     }
 }

@@ -5,7 +5,7 @@ namespace MimoBackend.API.Controllers;
 
 [ApiController]
 [Route("/user/achievements/")]
-public class UserAchievementController
+public class UserAchievementController: BaseController
 {
     private readonly IUserAchievementService _userAchievementService;
 
@@ -19,7 +19,7 @@ public class UserAchievementController
     [Produces("application/json")]
     public IActionResult GetUserAchievements([FromQuery(Name = "user")] string username)
     {
-        return _userAchievementService.GetUserAchievements(username);
+        return BuildResponse(_userAchievementService.GetUserAchievements(username));
     }
     
     [HttpGet]
@@ -27,7 +27,7 @@ public class UserAchievementController
     [Produces("application/json")]
     public IActionResult GetCompletedUserAchievements([FromQuery(Name = "user")] string username)
     {
-        return _userAchievementService.GetCompletedUserAchievements(username);
+        return BuildResponse(_userAchievementService.GetCompletedUserAchievements(username));
     }
     
     [HttpGet]
@@ -35,6 +35,6 @@ public class UserAchievementController
     [Produces("application/json")]
     public IActionResult GetUserAchievementsInProgress([FromQuery(Name = "user")] string username)
     {
-        return _userAchievementService.GetUserAchievementsInProgress(username);
+        return BuildResponse(_userAchievementService.GetOngoingUserAchievements(username));
     }
 }

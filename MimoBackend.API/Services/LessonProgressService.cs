@@ -109,7 +109,7 @@ public class LessonProgressService : BaseService, ILessonProgressService
     
     private void UpdateLessonUserAchievement(Lesson lesson, User user)
     {
-        _userAchievementService.UpdateLessonUserAchievement(lesson, user);
+        _userAchievementService.UpdateLessonUserAchievement(user);
 
         TryUpdateChapterUserAchievement(lesson, user);
     }
@@ -119,7 +119,7 @@ public class LessonProgressService : BaseService, ILessonProgressService
         var chapter = _chapterService.GetChapterBy(lesson.ChapterId);
         if (CompletedChapter(chapter, user))
         {
-            _userAchievementService.UpdateChapterUserAchievement(chapter, user);
+            _userAchievementService.UpdateChapterUserAchievement(user);
 
             TryUpdateCourseUserAchievement(user, chapter);
         }

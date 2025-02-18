@@ -19,6 +19,6 @@ public class AchievementController: BaseController
     [Produces("application/json")]
     public IActionResult GetAchievements([FromQuery(Name = "user")] string username)
     {
-        return BuildResponse(_achievementService.GetAchievements(username));
+        return BuildResponse(_achievementService.GetAchievements());
     }
 }

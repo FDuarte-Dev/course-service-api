@@ -11,7 +11,7 @@ public sealed class AppDbContext : DbContext
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<LessonProgress> LessonProgresses { get; set; }
     public DbSet<Achievement> Achievements { get; set; }
-    public DbSet<UserAchievements> UserAchievements { get; set; }
+    public DbSet<UserAchievement> UserAchievements { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)

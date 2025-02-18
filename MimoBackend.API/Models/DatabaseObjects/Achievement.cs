@@ -9,5 +9,6 @@ public class Achievement
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public string Name { get; set; }
+    public AchievementType Type { get; set; }
     public int CompletionRequirements { get; set; }
 }

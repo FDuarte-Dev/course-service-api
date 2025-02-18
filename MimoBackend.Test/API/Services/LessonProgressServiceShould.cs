@@ -207,7 +207,7 @@ public class LessonProgressServiceShould
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().BePositive();
-        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_user), Times.Once);
     }
     
     [Fact]
@@ -227,7 +227,7 @@ public class LessonProgressServiceShould
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().Be(1);
-        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_user), Times.Once);
     }
     
     [Fact]
@@ -250,8 +250,8 @@ public class LessonProgressServiceShould
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().BePositive();
-        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
-        _userAchievementService.Verify(x => x.UpdateChapterUserAchievement(chapter, _user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateChapterUserAchievement(_user), Times.Once);
     }
     
     [Fact]
@@ -284,8 +284,8 @@ public class LessonProgressServiceShould
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().BePositive();
-        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
-        _userAchievementService.Verify(x => x.UpdateChapterUserAchievement(chapter, _user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateChapterUserAchievement(_user), Times.Once);
         _userAchievementService.Verify(x => x.UpdateCourseUserAchievement(course, _user), Times.Once);
     }
 
