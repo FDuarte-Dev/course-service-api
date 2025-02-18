@@ -6,6 +6,7 @@ namespace MimoBackend.API.Services;
 public interface IChapterService
 {
     Chapter GetChapterBy(int chapterId);
+    bool UserCompletedChapter(Chapter chapter, User user);
 }
 
 public class ChapterService : IChapterService
@@ -20,5 +21,10 @@ public class ChapterService : IChapterService
     public Chapter GetChapterBy(int chapterId)
     {
         return _chapterRepository.GetChapterBy(chapterId) ?? NotFoundChapter.GetNotFoundChapter();
+    }
+
+    public bool UserCompletedChapter(Chapter chapter, User user)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Repositories;
@@ -7,9 +6,9 @@ namespace MimoBackend.API.Services;
 
 public interface ILessonProgressService
 {
-    IActionResult UpdateLesson(int lessonId, LessonUpdate lessonUpdate, string username);
-    IActionResult StartLesson(int lessonId, DateTime startTime, string username);
-    IActionResult CompleteLesson(int lessonId, DateTime completionTime, string username);
+    LessonProgress UpdateLesson(int lessonId, LessonUpdate lessonUpdate, string username);
+    LessonProgress StartLesson(int lessonId, DateTime startTime, string username);
+    LessonProgress CompleteLesson(int lessonId, DateTime completionTime, string username);
 }
 
 public class LessonProgressService : BaseService, ILessonProgressService
@@ -37,59 +36,61 @@ public class LessonProgressService : BaseService, ILessonProgressService
         _lessonProgressRepository = lessonProgressRepository;
     }
 
-    public IActionResult UpdateLesson(int lessonId, LessonUpdate lessonUpdate, string username)
+    public LessonProgress UpdateLesson(int lessonId, LessonUpdate lessonUpdate, string username)
     {
         var lesson = _lessonService.GetLessonBy(lessonId);
-        if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
-            return lessonNotFound;
+        if (LessonNotFound(lesson)) 
+            return NotFoundLessonProgress.GetNotFoundLessonProgress();
 
         var user = _userService.GetUserBy(username);
-        if (UserNotFoundReturns(user, out var userNotFound)) 
-            return userNotFound;
+        if (UserNotFound(user)) 
+            return NotFoundLessonProgress.GetNotFoundLessonProgress();
 
-        var lessonProgress = CreateLessonProgress(lesson!, user!, lessonUpdate.StartTime, lessonUpdate.CompletionTime);
+        var lessonProgress = CreateLessonProgress(lesson, user, lessonUpdate.StartTime, lessonUpdate.CompletionTime);
         lessonProgress = _lessonProgressRepository.AddLessonProgress(lessonProgress);
 
-        UpdateLessonUserAchievement(lesson!, user!);
+        UpdateLessonUserAchievement(lesson, user);
         
-        return BuildResponse(StatusCodes.Status200OK, lessonProgress);
+        return lessonProgress;
     }
 
-    public IActionResult StartLesson(int lessonId, DateTime startTime, string username)
+    public LessonProgress StartLesson(int lessonId, DateTime startTime, string username)
     {
         var lesson = _lessonService.GetLessonBy(lessonId);
-        if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
-            return lessonNotFound;
+        if (LessonNotFound(lesson)) 
+            return NotFoundLessonProgress.GetNotFoundLessonProgress();
 
         var user = _userService.GetUserBy(username);
-        if (UserNotFoundReturns(user, out var userNotFound)) 
-            return userNotFound;
+        if (UserNotFound(user)) 
+            return NotFoundLessonProgress.GetNotFoundLessonProgress();
         
-        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson!, user!, false);
+        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, false);
+        
         lessonProgress = lessonProgress is null ?
-            _lessonProgressRepository.AddLessonProgress(CreateLessonProgress(lesson!, user!, startTime)) :
-            _lessonProgressRepository.UpdateLessonProgressStartTime(lessonProgress.Id, startTime);
-        return BuildResponse(StatusCodes.Status200OK, lessonProgress);
+            _lessonProgressRepository.AddLessonProgress(CreateLessonProgress(lesson, user, startTime)) :
+            _lessonProgressRepository.UpdateLessonProgressStartTime(lessonProgress!.Id, startTime)!;
+        
+        return lessonProgress;
     }
 
-    public IActionResult CompleteLesson(int lessonId, DateTime completionTime, string username)
+    public LessonProgress CompleteLesson(int lessonId, DateTime completionTime, string username)
     {
         var lesson = _lessonService.GetLessonBy(lessonId);
-        if (LessonNotFoundReturns(lesson, out var lessonNotFound)) 
-            return lessonNotFound;
+        if (LessonNotFound(lesson)) 
+            return NotFoundLessonProgress.GetNotFoundLessonProgress();
 
         var user = _userService.GetUserBy(username);
-        if (UserNotFoundReturns(user, out var userNotFound)) 
-            return userNotFound;
+        if (UserNotFound(user)) 
+            return NotFoundLessonProgress.GetNotFoundLessonProgress();
         
-        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson!, user!, false);
-        if (LessonProgressNotFoundReturns(lessonProgress, out var lessonProgressNotFound)) 
-            return lessonProgressNotFound;
-        lessonProgress = _lessonProgressRepository.UpdateLessonProgressCompletionTime(lessonProgress!.Id, completionTime);
+        var lessonProgress = _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, false);
+        if (LessonProgressNotFound(lessonProgress)) 
+            return NotFoundLessonProgress.GetNotFoundLessonProgress();
+        lessonProgress = _lessonProgressRepository.UpdateLessonProgressCompletionTime(lessonProgress!.Id, completionTime)!;
         
-        UpdateLessonUserAchievement(lesson!, user!);
+        UpdateLessonUserAchievement(lesson, user);
         
-        return BuildResponse(StatusCodes.Status200OK, lessonProgress);
+        return lessonProgress;
     }
     
     private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime) 
@@ -135,11 +136,11 @@ public class LessonProgressService : BaseService, ILessonProgressService
 
     private bool CompletedChapter(Chapter chapter, User user)
     {
-        throw new NotImplementedException();
+        return _chapterService.UserCompletedChapter(chapter, user);
     }
     
     private bool CompletedCourse(Course course, User user)
     {
-        throw new NotImplementedException();
+        return _courseService.UserCompletedCourse(course, user);
     }
 }

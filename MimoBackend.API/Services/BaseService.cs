@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
 using Newtonsoft.Json;
 
@@ -21,54 +22,12 @@ public abstract class BaseService
             ContentType = MediaTypeNames.Application.Json
         };
     
-    protected static bool UserNotFoundReturns(User? user, out IActionResult actionResult)
-    {
-        actionResult = null!;
-        if (UserNotFound())
-        {
-            {
-                actionResult = BuildResponse(StatusCodes.Status404NotFound, "User not found");
-                return true;
-            }
-        }
+    protected static bool UserNotFound(User? user) 
+        => user is NotFoundObject;
 
-        return false;
-        
-        bool UserNotFound() 
-            => user is null;
-    }
-    
-    protected static bool LessonNotFoundReturns(Lesson? lesson, out IActionResult actionResult)
-    {
-        actionResult = null!;
-        if (LessonNotFound())
-        {
-            {
-                actionResult = BuildResponse(StatusCodes.Status404NotFound, "Lesson not found");
-                return true;
-            }
-        }
+    protected static bool LessonNotFound(Lesson? lesson) 
+        => lesson is NotFoundObject;
 
-        return false;
-        
-        bool LessonNotFound() 
-            => lesson is null;
-    }
-    
-    protected static bool LessonProgressNotFoundReturns(LessonProgress? lessonProgress, out IActionResult actionResult)
-    {
-        actionResult = null!;
-        if (LessonProgressNotFound())
-        {
-            {
-                actionResult = BuildResponse(StatusCodes.Status404NotFound, "Lesson progress not found");
-                return true;
-            }
-        }
-
-        return false;
-        
-        bool LessonProgressNotFound() 
-            => lessonProgress is null;
-    }
+    protected static bool LessonProgressNotFound(LessonProgress? lessonProgress) 
+        => lessonProgress is NotFoundObject;
 }

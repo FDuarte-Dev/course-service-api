@@ -16,3 +16,13 @@ public class LessonProgress
     public int LessonId { get; set; }
     public Lesson Lesson { get; set; }
 }
+
+public sealed class NotFoundLessonProgress : LessonProgress, NotFoundObject
+{
+    private NotFoundLessonProgress() { }
+    private static readonly NotFoundLessonProgress LessonProgress = new();
+    public static NotFoundLessonProgress GetNotFoundLessonProgress()
+    {
+        return LessonProgress;
+    }
+}

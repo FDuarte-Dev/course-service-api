@@ -54,4 +54,26 @@ public class CourseServiceShould : BaseServiceTest
     }
 
     #endregion
+
+    #region UserCompletedCourse
+
+    [Fact]
+    public void ReturnTrueIfUserCompletedAllChaptersInCourse()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+    
+    [Fact]
+    public void ReturnFalseIfUserDidNotCompletedAllChaptersInCourse()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+
+    #endregion
 }

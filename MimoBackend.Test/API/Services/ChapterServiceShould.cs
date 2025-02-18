@@ -54,4 +54,26 @@ public class ChapterServiceShould : BaseServiceTest
     }
 
     #endregion
+
+    #region UserCompletedChapter
+
+    [Fact]
+    public void ReturnTrueIfUserCompletedAllLessonsInChapter()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+    
+    [Fact]
+    public void ReturnFalseIfUserDidNotCompletedAllLessonsInChapter()
+    {
+        // Arrange
+        // Act
+        // Assert
+        Assert.Fail();
+    }
+
+    #endregion
 }

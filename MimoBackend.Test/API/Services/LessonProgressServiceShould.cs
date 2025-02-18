@@ -29,7 +29,8 @@ public class LessonProgressServiceShould
     private readonly Lesson _lesson = new ()
     {
         Id = 1,
-        Order = 1
+        Order = 1,
+        ChapterId = 1
     };
     private readonly LessonUpdate _lessonUpdate = new()
     {
@@ -45,6 +46,11 @@ public class LessonProgressServiceShould
             .Returns(_lesson);
         _userService.Setup(x => x.GetUserBy(Username))
             .Returns(_user);
+
+        _chapterService.Setup(x => x.UserCompletedChapter(It.IsAny<Chapter>(), It.IsAny<User>()))
+            .Returns(false);
+        _courseService.Setup(x => x.UserCompletedCourse(It.IsAny<Course>(), It.IsAny<User>()))
+            .Returns(false);
         
         _service = new LessonProgressService(
             _chapterService.Object,
@@ -70,7 +76,8 @@ public class LessonProgressServiceShould
         var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
+        result.Should().NotBeNull();
+        result.Id.Should().BePositive();
     }
 
     [Fact]
@@ -78,13 +85,13 @@ public class LessonProgressServiceShould
     {
         // Arrange
         _lessonService.Setup(x => x.GetLessonBy(_lesson.Id))
-            .Returns((Lesson?)null);
+            .Returns(NotFoundLesson.GetNotFoundLesson());
         
         // Act
         var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        result.Should().BeAssignableTo(typeof(NotFoundLessonProgress));
     }
     
     [Fact]
@@ -92,13 +99,13 @@ public class LessonProgressServiceShould
     {
         // Arrange
         _userService.Setup(x => x.GetUserBy(Username))
-            .Returns((User?)null);
+            .Returns(NotFoundUser.GetNotFoundUser);
         
         // Act
         var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        result.Should().BeAssignableTo(typeof(NotFoundLessonProgress));
     }
 
     #endregion
@@ -120,8 +127,8 @@ public class LessonProgressServiceShould
         var result = _service.StartLesson(_lesson.Id, DateTime.Today, Username);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
+        result.Should().NotBeNull();
+        result.Id.Should().Be(1);
     }
     
     [Fact]
@@ -131,7 +138,7 @@ public class LessonProgressServiceShould
         var lessonProgress = 
             CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
         _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, _user, true))
-            .Returns((LessonProgress?)null);
+            .Returns(NotFoundLessonProgress.GetNotFoundLessonProgress);
         _lpRepository.Setup(x => x.AddLessonProgress(It.IsAny<LessonProgress>()))
             .Returns(lessonProgress);
         
@@ -139,8 +146,8 @@ public class LessonProgressServiceShould
         var result = _service.StartLesson(_lesson.Id, DateTime.Today, Username);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
+        result.Should().NotBeNull();
+        result.Id.Should().Be(1);
     }
 
     #endregion
@@ -162,8 +169,8 @@ public class LessonProgressServiceShould
         var result = _service.CompleteLesson(_lesson.Id, DateTime.Today, Username);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        (result as ContentResult)!.Content.Should().Contain("\"Id\":1");
+        result.Should().NotBeNull();
+        result.Id.Should().Be(1);
     }
     
     [Fact]
@@ -171,13 +178,13 @@ public class LessonProgressServiceShould
     {
         // Arrange
         _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, _user, false))
-            .Returns((LessonProgress?)null);
+            .Returns(NotFoundLessonProgress.GetNotFoundLessonProgress);
         
         // Act
         var result = _service.CompleteLesson(_lesson.Id, _lessonUpdate.CompletionTime, Username);
         
         // Assert
-        (result as ContentResult)!.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        result.Should().BeAssignableTo(typeof(NotFoundLessonProgress));
 
     }
 
@@ -189,36 +196,97 @@ public class LessonProgressServiceShould
     public void UpdateLessonUserAchievementsOnUpdatedLesson()
     {
         // Arrange
+        var expectedLessonUpdate =
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
+        _lpRepository.Setup(x => x.AddLessonProgress(It.IsAny<LessonProgress>()))
+            .Returns(expectedLessonUpdate);
+        
         // Act
+        var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeNull();
+        result.Id.Should().BePositive();
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
     }
     
     [Fact]
     public void UpdateLessonUserAchievementsOnCompletedLesson()
     {
         // Arrange
+        var existing = 
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
+        _lpRepository.Setup(x => x.FindByLessonUserAndCompletion(_lesson, _user, false))
+            .Returns(existing);
+        _lpRepository.Setup(x => x.UpdateLessonProgressCompletionTime(1, _lessonUpdate.StartTime))
+            .Returns(existing);
+        
         // Act
+        var result = _service.CompleteLesson(_lesson.Id, DateTime.Today, Username);
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeNull();
+        result.Id.Should().Be(1);
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
     }
     
     [Fact]
     public void UpdateChapterUserAchievementsOnCompletedChapter()
     {
         // Arrange
+        var chapter = new Chapter();
+        var expectedLessonUpdate =
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
+        _lpRepository.Setup(x => x.AddLessonProgress(It.IsAny<LessonProgress>()))
+            .Returns(expectedLessonUpdate);
+        _chapterService.Setup(x => x.GetChapterBy(_lesson.ChapterId))
+            .Returns(chapter);
+        _chapterService.Setup(x => x.UserCompletedChapter(chapter, _user))
+            .Returns(true);
+        
         // Act
+        var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeNull();
+        result.Id.Should().BePositive();
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateChapterUserAchievement(chapter, _user), Times.Once);
     }
     
     [Fact]
     public void UpdateCourseUserAchievementsOnCompletedCourse()
     {
         // Arrange
+        var course = new Course();
+        var chapter = new Chapter()
+        {
+            CourseId = 1
+        };
+        var expectedLessonUpdate =
+            CreateLessonProgress(_lesson, _user, _lessonUpdate.StartTime, _lessonUpdate.CompletionTime);
+        _lpRepository.Setup(x => x.AddLessonProgress(It.IsAny<LessonProgress>()))
+            .Returns(expectedLessonUpdate);
+        
+        _chapterService.Setup(x => x.GetChapterBy(_lesson.ChapterId))
+            .Returns(chapter);
+        _chapterService.Setup(x => x.UserCompletedChapter(chapter, _user))
+            .Returns(true);
+        
+        _courseService.Setup(x => x.GetCourseBy(chapter.CourseId))
+            .Returns(course);
+        _courseService.Setup(x => x.UserCompletedCourse(course, _user))
+            .Returns(true);
+        
         // Act
+        var result = _service.UpdateLesson(_lesson.Id, _lessonUpdate, Username);
+        
         // Assert
-        Assert.Fail();
+        result.Should().NotBeNull();
+        result.Id.Should().BePositive();
+        _userAchievementService.Verify(x => x.UpdateLessonUserAchievement(_lesson, _user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateChapterUserAchievement(chapter, _user), Times.Once);
+        _userAchievementService.Verify(x => x.UpdateCourseUserAchievement(course, _user), Times.Once);
     }
 
     #endregion
