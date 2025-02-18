@@ -9,7 +9,7 @@ namespace MimoBackend.Test.API.Services;
 public class ChapterServiceShould : BaseServiceTest
 {
     private readonly Mock<ILessonService> _lessonService = new();
-    private readonly Mock<ILessonProgressService> _lessonProgressService = new();
+    private readonly Mock<ILessonProgressRepository> _lessonProgressRepository = new();
     private readonly Mock<IChapterRepository> _chapterRepository = new();
     
     private readonly ChapterService _service;
@@ -18,7 +18,7 @@ public class ChapterServiceShould : BaseServiceTest
     {
         _service = new ChapterService(
             _lessonService.Object,
-            _lessonProgressService.Object,
+            _lessonProgressRepository.Object,
             _chapterRepository.Object);
     }
     
@@ -71,8 +71,8 @@ public class ChapterServiceShould : BaseServiceTest
         var lessons = new List<Lesson> { lesson };
         _lessonService.Setup(x => x.GetChapterLessons(1))
             .Returns(lessons);
-        _lessonProgressService.Setup(x => x.UserCompletedLesson(lesson, User))
-            .Returns(true);
+        _lessonProgressRepository.Setup(x => x.FindByLessonUserAndCompletion(lesson, User, true))
+            .Returns(new LessonProgress());
         
         // Act
         var result = _service.UserCompletedChapter(chapter, User);
@@ -90,8 +90,8 @@ public class ChapterServiceShould : BaseServiceTest
         var lessons = new List<Lesson> { lesson };
         _lessonService.Setup(x => x.GetChapterLessons(1))
             .Returns(lessons);
-        _lessonProgressService.Setup(x => x.UserCompletedLesson(lesson, User))
-            .Returns(false);
+        _lessonProgressRepository.Setup(x => x.FindByLessonUserAndCompletion(lesson, User, true))
+            .Returns((LessonProgress?)null);
         
         // Act
         var result = _service.UserCompletedChapter(chapter, User);

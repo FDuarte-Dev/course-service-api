@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
 
 namespace MimoBackend.API.Persistence;
@@ -78,14 +79,14 @@ public sealed class AppDbContext : DbContext
             csharp1Lesson1, csharp1Lesson2, csharp1Lesson3,
             csharp2Lesson1, csharp2Lesson2);
 
-        var complete5Lessons = new Achievement {Name = "Complete 5 lessons", CompletionRequirements = 5};
-        var complete25Lessons = new Achievement {Name = "Complete 25 lessons", CompletionRequirements = 25};
-        var complete50Lessons = new Achievement {Name = "Complete 50 lessons", CompletionRequirements = 50};
-        var complete1Chapter = new Achievement {Name = "Complete 1 chapter", CompletionRequirements = 1};
-        var complete5Chapters = new Achievement {Name = "Complete 5 chapters", CompletionRequirements = 5};
-        var completeSwift = new Achievement {Name = "Complete the Swift course", CompletionRequirements = 1};
-        var completeJavascript = new Achievement {Name = "Complete the Javascript course", CompletionRequirements = 1};
-        var completeCsharp = new Achievement {Name = "Complete the C# course", CompletionRequirements = 1};
+        var complete5Lessons = new Achievement {Name = "Complete 5 lessons", CompletionRequirements = 5, Type = AchievementType.CompletedLessons};
+        var complete25Lessons = new Achievement {Name = "Complete 25 lessons", CompletionRequirements = 25, Type = AchievementType.CompletedLessons};
+        var complete50Lessons = new Achievement {Name = "Complete 50 lessons", CompletionRequirements = 50, Type = AchievementType.CompletedLessons};
+        var complete1Chapter = new Achievement {Name = "Complete 1 chapter", CompletionRequirements = 1, Type = AchievementType.CompletedChapters};
+        var complete5Chapters = new Achievement {Name = "Complete 5 chapters", CompletionRequirements = 5, Type = AchievementType.CompletedChapters};
+        var completeSwift = new Achievement {Name = "Complete the Swift course", CompletionRequirements = 1, Type = AchievementType.CompletedCourses};
+        var completeJavascript = new Achievement {Name = "Complete the Javascript course", CompletionRequirements = 1, Type = AchievementType.CompletedCourses};
+        var completeCsharp = new Achievement {Name = "Complete the C# course", CompletionRequirements = 1, Type = AchievementType.CompletedCourses};
         Achievements.AddRange(
             complete5Lessons, complete25Lessons, complete50Lessons,
             complete1Chapter, complete5Chapters,
