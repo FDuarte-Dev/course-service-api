@@ -10,7 +10,7 @@ public interface IAchievementService
     IEnumerable<Achievement> GetAchievementsOfType(AchievementType achievementType);
 }
 
-public class AchievementService : IAchievementService
+public class AchievementService : BaseService, IAchievementService
 {
     private readonly IAchievementRepository _achievementRepository;
 

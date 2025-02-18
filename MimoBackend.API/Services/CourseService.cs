@@ -9,12 +9,16 @@ public interface ICourseService
     bool UserCompletedCourse(Course course, User user);
 }
 
-public class CourseService : ICourseService
+public class CourseService : BaseService, ICourseService
 {
+    private readonly IChapterService _chapterService;
     private readonly ICourseRepository _courseRepository;
 
-    public CourseService(ICourseRepository courseRepository)
+    public CourseService(
+        IChapterService chapterService,
+        ICourseRepository courseRepository)
     {
+        _chapterService = chapterService;
         _courseRepository = courseRepository;
     }
     
@@ -25,6 +29,7 @@ public class CourseService : ICourseService
 
     public bool UserCompletedCourse(Course course, User user)
     {
-        throw new NotImplementedException();
+        var chapters = _chapterService.GetCourseChapters(course.Id);
+        return chapters.All(x => _chapterService.UserCompletedChapter(x, user));
     }
 }

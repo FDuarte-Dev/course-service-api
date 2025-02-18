@@ -10,20 +10,25 @@ public static class ServiceCollectionHelper
 {
     public static void SetServices(this IServiceCollection services)
     {
-        services.AddScoped<IAuthorizationService, AuthorizationService>();
-        services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IAchievementService, AchievementService>();
+        services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<IChapterService, ChapterService>();
+        services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<ILessonProgressService, LessonProgressService>();
+        services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IUserAchievementService, UserAchievementService>();
+        services.AddScoped<IUserService, UserService>();
     }
     
     public static void SetRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<IAchievementRepository, AchievementRepository>();
+        services.AddScoped<IChapterRepository, ChapterRepository>();
+        services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
+        services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<IUserAchievementRepository, UserAchievementRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
     }
     
     public static void SetPersistence(this IServiceCollection services)

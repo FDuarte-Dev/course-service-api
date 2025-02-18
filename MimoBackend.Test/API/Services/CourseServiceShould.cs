@@ -8,13 +8,16 @@ namespace MimoBackend.Test.API.Services;
 
 public class CourseServiceShould : BaseServiceTest
 {
+    private readonly Mock<IChapterService> _chapterService = new();
     private readonly Mock<ICourseRepository> _courseRepository = new();
     
     private readonly CourseService _service;
     
     public CourseServiceShould()
     {
-        _service = new CourseService(_courseRepository.Object);
+        _service = new CourseService(
+            _chapterService.Object,
+            _courseRepository.Object);
     }
     
     #region GetCourseBy
@@ -56,23 +59,39 @@ public class CourseServiceShould : BaseServiceTest
     #endregion
 
     #region UserCompletedCourse
-
+    
     [Fact]
     public void ReturnTrueIfUserCompletedAllChaptersInCourse()
     {
         // Arrange
+        var course = new Course {Id = 1};
+        var chapter = new Chapter();
+        var chapters = new List<Chapter> { chapter };
+        _chapterService.Setup(x => x.GetCourseChapters(course.Id))
+            .Returns(chapters);
+        _chapterService.Setup(x => x.UserCompletedChapter(chapter, User))
+            .Returns(true);
+        
         // Act
+        var result = _service.UserCompletedCourse(course, User);
+        
         // Assert
-        Assert.Fail();
+        result.Should().BeTrue();
     }
     
     [Fact]
     public void ReturnFalseIfUserDidNotCompletedAllChaptersInCourse()
     {
         // Arrange
+        var course = new Course {Id = 1};
+        _chapterService.Setup(x => x.GetCourseChapters(course.Id))
+            .Returns(Enumerable.Empty<Chapter>());
+        
         // Act
+        var result = _service.UserCompletedCourse(course, User);
+        
         // Assert
-        Assert.Fail();
+        result.Should().BeTrue();
     }
 
     #endregion

@@ -9,6 +9,7 @@ public interface ILessonProgressService
     LessonProgress UpdateLesson(int lessonId, LessonUpdate lessonUpdate, string username);
     LessonProgress StartLesson(int lessonId, DateTime startTime, string username);
     LessonProgress CompleteLesson(int lessonId, DateTime completionTime, string username);
+    bool UserCompletedLesson(Lesson lesson, User user);
 }
 
 public class LessonProgressService : BaseService, ILessonProgressService
@@ -68,7 +69,7 @@ public class LessonProgressService : BaseService, ILessonProgressService
         
         lessonProgress = lessonProgress is null ?
             _lessonProgressRepository.AddLessonProgress(CreateLessonProgress(lesson, user, startTime)) :
-            _lessonProgressRepository.UpdateLessonProgressStartTime(lessonProgress!.Id, startTime)!;
+            _lessonProgressRepository.UpdateLessonProgressStartTime(lessonProgress.Id, startTime)!;
         
         return lessonProgress;
     }
@@ -92,7 +93,13 @@ public class LessonProgressService : BaseService, ILessonProgressService
         
         return lessonProgress;
     }
-    
+
+    public bool UserCompletedLesson(Lesson lesson, User user)
+    {
+        return _lessonProgressRepository.FindByLessonUserAndCompletion(lesson, user, true)
+            is not null;
+    }
+
     private static LessonProgress CreateLessonProgress(Lesson lesson, User user, DateTime startTime) 
         => CreateLessonProgress(lesson, user, startTime, null);
     

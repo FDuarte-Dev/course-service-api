@@ -7,9 +7,10 @@ public interface ILessonService
 {
     Lesson GetLessonBy(int lessonId);
     IEnumerable<Lesson> GetLessons();
+    IEnumerable<Lesson> GetChapterLessons(int chapterId);
 }
 
-public class LessonService : ILessonService
+public class LessonService : BaseService, ILessonService
 {
     private readonly ILessonRepository _lessonRepository;
 
@@ -25,5 +26,10 @@ public class LessonService : ILessonService
     {
         var lessons = _lessonRepository.GetLessons();
         return lessons;
+    }
+
+    public IEnumerable<Lesson> GetChapterLessons(int chapterId)
+    {
+        return _lessonRepository.GetChapterLessons(chapterId);
     }
 }

@@ -1,6 +1,4 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using MimoBackend.API.Models;
 using MimoBackend.API.Models.DatabaseObjects;
 using MimoBackend.API.Repositories;
@@ -45,7 +43,7 @@ public class AchievementServiceShould : BaseServiceTest
             .Returns(achievements);
         
         // Act
-        var result = _service.GetAchievements();
+        var result = _service.GetAchievements().ToList();
 
         // Assert
         result.Should().NotBeEmpty();
@@ -77,7 +75,7 @@ public class AchievementServiceShould : BaseServiceTest
     public void ReturnEmptyListIfNoAchievementMatchesTheGivenType()
     {
         // Arrange
-        var achievements = new List<Achievement> ();
+        var achievements = new List<Achievement>();
         _achievementRepository.Setup(x => x.GetAchievements())
             .Returns(achievements);
         

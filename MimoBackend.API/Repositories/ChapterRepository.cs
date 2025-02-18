@@ -6,6 +6,7 @@ namespace MimoBackend.API.Repositories;
 public interface IChapterRepository
 {
     Chapter? GetChapterBy(int chapterId);
+    IEnumerable<Chapter> GetCourseChapters(int courseId);
 }
 
 public class ChapterRepository : IChapterRepository
@@ -17,8 +18,9 @@ public class ChapterRepository : IChapterRepository
         _context = context;
     }
     
-    public Chapter? GetChapterBy(int chapterId)
-    {
-        return _context.Chapters.FirstOrDefault(x => x.Id == chapterId);
-    }
+    public Chapter? GetChapterBy(int chapterId) 
+        => _context.Chapters.FirstOrDefault(x => x.Id == chapterId);
+
+    public IEnumerable<Chapter> GetCourseChapters(int courseId) 
+        => _context.Chapters.Where(x => x.CourseId == courseId);
 }

@@ -82,11 +82,48 @@ public class LessonServiceShould
             .Returns(lessons);
         
         // Act
-        var result = _service.GetLessons();
+        var result = _service.GetLessons().ToList();
 
         // Assert
         result.Should().NotBeEmpty();
         result.First().Id.Should().Be(1);
+    }
+
+    #endregion
+
+    #region GetChapterLessons
+    
+    [Fact]
+    public void ReturnLessonFromGivenChapter()
+    {
+        // Arrange
+        var lessons = new List<Lesson> { new() { Id = 1 } };
+        
+        _lessonRepository.Setup(x => x.GetChapterLessons(1))
+            .Returns(lessons);
+        
+        // Act
+        var result = _service.GetChapterLessons(1).ToList();
+
+        // Assert
+        result.Should().NotBeEmpty();
+        result.First().Id.Should().Be(1);
+    }
+    
+    [Fact]
+    public void ReturnEmptyLstOnChapterWithoutLessons()
+    {
+        // Arrange
+        var lessons = new List<Lesson>();
+        
+        _lessonRepository.Setup(x => x.GetChapterLessons(1))
+            .Returns(lessons);
+        
+        // Act
+        var result = _service.GetChapterLessons(1);
+
+        // Assert
+        result.Should().BeEmpty();
     }
 
     #endregion

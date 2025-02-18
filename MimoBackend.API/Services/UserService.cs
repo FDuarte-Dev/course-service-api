@@ -8,7 +8,7 @@ public interface IUserService
     User GetUserBy(string username);
 }
 
-public class UserService : IUserService
+public class UserService : BaseService, IUserService
 {
     private readonly IUserRepository _userRepository;
 

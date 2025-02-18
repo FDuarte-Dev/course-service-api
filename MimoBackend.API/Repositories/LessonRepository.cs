@@ -7,6 +7,7 @@ public interface ILessonRepository
 {
     IEnumerable<Lesson> GetLessons();
     Lesson? GetLessonBy(int lessonId);
+    IEnumerable<Lesson> GetChapterLessons(int chapterId);
 }
 
 public class LessonRepository : ILessonRepository
@@ -23,8 +24,9 @@ public class LessonRepository : ILessonRepository
         return _context.Lessons.AsEnumerable();
     }
     
-    public Lesson? GetLessonBy(int lessonId)
-    {
-        return _context.Lessons.FirstOrDefault(x => x.Id == lessonId);
-    }
+    public Lesson? GetLessonBy(int lessonId) 
+        => _context.Lessons.FirstOrDefault(x => x.Id == lessonId);
+
+    public IEnumerable<Lesson> GetChapterLessons(int chapterId) 
+        => _context.Lessons.Where(x => x.ChapterId == chapterId);
 }
