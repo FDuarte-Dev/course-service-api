@@ -1,12 +1,12 @@
-# Mimo Backend Coding Challenge
+# Course Service API
 
-Your objective is to create a basic version of the Mimo server functionality.
+Your objective is to create a basic version of the A Course Service server functionality.
 
-The point of this exercise is not to create a fully-functional bug-free server implementation,
-but rather to look how you would design such a server system and how you approach different problems.
+The point of this project is not to create a fully-functional bug-free server implementation,
+but rather to look how to design such a server system and how you approach different problems.
 
-Write the server with ASP.NET Core, backed by Entity Framework Core with SQLite as database 
-(so we don't have to setup a full blown database).
+I've written the server with ASP.NET Core, backed by Entity Framework Core with SQLite as database 
+(so I don't have to setup a full blown database).
 
 The server should expose only REST endpoints using JSON as the format.
 
@@ -14,7 +14,7 @@ The server should expose only REST endpoints using JSON as the format.
 
 ### Courses
 
-- There are multiple **courses** (create a "Swift", "Javascript" and "C#" course in the database)
+- There are multiple **courses** (for example a "Swift", "Javascript" and "C#" course in the database)
 - Each **course** has multiple **chapters**
 - **Chapters** have a specific order in which they are displayed
 - Each **chapter** has multiple **lessons**
@@ -22,8 +22,8 @@ The server should expose only REST endpoints using JSON as the format.
 
 ### Users
 
-- There are multiple **users** accessing the REST endpoints (e.g., from the Mimo app)
-- You don't have to create an authentication system, just hardcode any user-specific actions to a single user
+- There are multiple **users** accessing the REST endpoints (e.g., students for the course)
+- I didn't create an authentication system, just hardcoded some user-specific actions to a single user
 - Each user can solve multiple **lessons**
 - Each **lesson** can be solved multiple times
 - Track the time the **user** starts the **lessons** and the time the **user** completes the **lesson**
@@ -32,7 +32,7 @@ The server should expose only REST endpoints using JSON as the format.
 
 - There are **achievements** for completing different objectives (see below)
 - Each **user** can complete each of the achievements below
-- Once a user completes an **achievement**, mark it as completed
+- Once a user completes an **achievement**, it's marked as completed
 
 #### Objectives
 
@@ -49,7 +49,7 @@ The server should expose only REST endpoints using JSON as the format.
 
 ### Lesson progress
 
-Create an endpoint where the Mimo app can send information about lessons that the user completed to.
+Created an endpoint where the Course Service API can send information about lessons that the user completed to.
 The app will send the following data:
 - Which lesson was completed
 - When was the lesson started
@@ -57,7 +57,7 @@ The app will send the following data:
 
 ### Achievements
 
-Create an endpoint where the Mimo app can request which achievements the users has completed
+Create an endpoint where the Course Service API can request which achievements the users has completed
 The app needs the following data:
 - An identifier for the achievement
 - If the achievement is completed or not
